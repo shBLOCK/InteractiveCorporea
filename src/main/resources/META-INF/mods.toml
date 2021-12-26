@@ -1,0 +1,25 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="MIT"
+
+[[mods]]
+modId="interactive_corporea"
+version="${file.jarVersion}"
+displayName="Interactive Corporea"
+logoFile="interactive_corporea.png"
+authors="shBLOCK"
+description='''
+A addon-mod for Botania to make the Corporea system easier to use.
+'''
+[[dependencies.examplemod]]
+    modId="forge"
+    mandatory=true
+    versionRange="[36,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.examplemod]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.5,1.17)"
+    ordering="NONE"
+    side="BOTH"
