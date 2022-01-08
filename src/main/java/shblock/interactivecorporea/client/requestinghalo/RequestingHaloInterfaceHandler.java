@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.event.TickEvent;
@@ -51,21 +52,22 @@ public class RequestingHaloInterfaceHandler {
   }
 
   private static void setupKeyboardListener() {
-//    InputMappings.setKeyCallbacks(mc.getMainWindow().getHandle(), RequestingHaloInterfaceHandler::keyCallback, RequestingHaloInterfaceHandler::charCallback);
     KeyBinding.unPressAllKeys();
     GLFW.glfwSetKeyCallback(mc.getMainWindow().getHandle(),
         (windowPointer, key, scanCode, action, modifiers) -> {
-          if (key == GLFW.GLFW_KEY_ESCAPE) {
-            if (action == GLFW.GLFW_PRESS) {
-              if (RequestingHaloInterfaceHandler.getInterface() != null) {
-                RequestingHaloInterfaceHandler.closeInterface();
-              }
-            }
-          } else {
+          if (!shouldCancelKeyEvent(key, scanCode)) {
             mc.execute(() -> mc.keyboardListener.onKeyEvent(windowPointer, key, scanCode, action, modifiers));
           }
         });
-    GLFW.glfwSetCharModsCallback(mc.getMainWindow().getHandle(), RequestingHaloInterfaceHandler::charCallback);
+    GLFW.glfwSetCharModsCallback(mc.getMainWindow().getHandle(), (windowPointer, codePoint, modifiers) -> {
+      if (mc.currentScreen != null) {
+        mc.execute(() -> {
+          mc.keyboardListener.onCharEvent(windowPointer, codePoint, modifiers);
+        });
+      } else {
+        RequestingHaloInterfaceHandler.charCallback(codePoint, modifiers);
+      }
+    });
   }
 
   public static void resetKeyboardListener() {
@@ -153,6 +155,12 @@ public class RequestingHaloInterfaceHandler {
   }
 
   @SubscribeEvent
+  public static void onHudRender(RenderGameOverlayEvent.Post event) {
+    if (getInterface() == null) return;
+    getInterface().renderHud(event.getMatrixStack(), event.getPartialTicks(), event.getWindow());
+  }
+
+  @SubscribeEvent
   public static void tick(TickEvent.ClientTickEvent event) {
     if (event.phase == TickEvent.Phase.START) {
       if (getInterface() != null) {
@@ -165,8 +173,10 @@ public class RequestingHaloInterfaceHandler {
   public static void onMouseInput(InputEvent.RawMouseEvent event) {
     if (getInterface() != null) {
       if (!getInterface().isClosing()) {
-        if (getInterface().onMouseInput(event.getButton(), event.getAction(), event.getMods())) {
-          event.setCanceled(true);
+        if (mc.currentScreen == null) {
+          if (getInterface().onMouseInput(event.getButton(), event.getAction(), event.getMods())) {
+            event.setCanceled(true);
+          }
         }
       }
     }
@@ -181,6 +191,12 @@ public class RequestingHaloInterfaceHandler {
         }
       }
     }
+  }
+
+  private static boolean shouldCancelKeyEvent(int key, int scanCode) {
+    if (getInterface() == null)
+      return false;
+    return getInterface().shouldCancelKeyEvent(key, scanCode);
   }
 
   @SubscribeEvent
@@ -199,7 +215,7 @@ public class RequestingHaloInterfaceHandler {
     }
   }
 
-  public static void charCallback(long window, int codePoint, int modifiers) {
+  public static void charCallback(int codePoint, int modifiers) {
     if (getInterface() != null) {
       getInterface().onCharEvent(codePoint, modifiers);
     }

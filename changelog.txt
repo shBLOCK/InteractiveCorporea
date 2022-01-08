@@ -182,7 +182,7 @@ Build: 1.16.5-36.1.61 - Sat Jul 17 11:14:53 GMT 2021
 		Patch several mob classes to let them use modded versions of their ranged weapons (#7845)
 
 	baileyholl:
-		Adds a damage float in Lightning Entity and patches Entity to use it. (#7849)
+		Adds a damage double in Lightning Entity and patches Entity to use it. (#7849)
 
 	thesilkminer:
 		Fix missing userdev config for datagen runs (#7871)

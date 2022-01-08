@@ -1,14 +1,12 @@
 package shblock.interactivecorporea.common.item;
 
-import com.mojang.datafixers.util.Pair;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -19,17 +17,21 @@ import net.minecraft.world.World;
 import shblock.interactivecorporea.IC;
 import shblock.interactivecorporea.client.requestinghalo.RequestingHaloInterface;
 import shblock.interactivecorporea.client.requestinghalo.RequestingHaloInterfaceHandler;
+import shblock.interactivecorporea.common.block.BlockItemQuantizationDevice;
 import shblock.interactivecorporea.common.util.CISlotPointer;
+import shblock.interactivecorporea.common.util.NBTTagHelper;
+import vazkii.botania.common.block.corporea.BlockCorporeaIndex;
 import vazkii.botania.common.core.helper.ItemNBTHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ItemRequestingHalo extends Item {
-  private static final String PREFIX_POS = "bound_position";
+  private static final String PREFIX_INDEX_POS = "bound_position";
+  private static final String PREFIX_SENDER_POS = "sender_position";
 
   public ItemRequestingHalo() {
-    super(new Properties().group(IC.ITEM_GROUP));
+    super(new Properties().group(IC.ITEM_GROUP).maxStackSize(1));
   }
 
   @Override
@@ -49,36 +51,44 @@ public class ItemRequestingHalo extends Item {
   }
 
   @Nullable
-  public static GlobalPos getBoundPosition(ItemStack stack) {
-    INBT nbt = ItemNBTHelper.get(stack, PREFIX_POS);
-    if (nbt == null) {
-      return null;
-    }
-    Pair<GlobalPos, INBT> result = GlobalPos.CODEC.decode(NBTDynamicOps.INSTANCE, nbt).result().orElse(null);
-    if (result == null) {
-      return null;
-    }
-    return result.getFirst();
+  public static GlobalPos getBoundIndexPosition(ItemStack stack) {
+    return NBTTagHelper.getGlobalPos(ItemNBTHelper.get(stack, PREFIX_INDEX_POS));
+  }
+
+  @Nullable
+  public static GlobalPos getBoundSenderPosition(ItemStack stack) {
+    return NBTTagHelper.getGlobalPos(ItemNBTHelper.get(stack, PREFIX_SENDER_POS));
   }
 
   @Override
   public ActionResultType onItemUse(ItemUseContext context) {
-    if (!context.getWorld().isRemote) {
-      if (context.getPlayer() == null) {
-        return ActionResultType.PASS;
-      }
+    World world = context.getWorld();
+    BlockPos pos = context.getPos();
+    Block block = world.getBlockState(pos).getBlock();
+    if (context.getPlayer() == null)
+      return ActionResultType.PASS;
+    if (!world.isRemote) {
       if (context.getPlayer().isSneaking()) {
-        RegistryKey<World> worldKey = context.getWorld().getDimensionKey();
-        INBT nbt = GlobalPos.CODEC.encodeStart(NBTDynamicOps.INSTANCE, GlobalPos.getPosition(worldKey, context.getPos())).get().orThrow();
-        ItemNBTHelper.set(context.getItem(), PREFIX_POS, nbt);
+        String prefix;
+        if (block instanceof BlockCorporeaIndex) {
+          prefix = PREFIX_INDEX_POS;
+        } else if (block instanceof BlockItemQuantizationDevice) {
+          prefix = PREFIX_SENDER_POS;
+        } else {
+          return ActionResultType.CONSUME;
+        }
+        RegistryKey<World> worldKey = world.getDimensionKey();
+        GlobalPos globalPos = GlobalPos.getPosition(worldKey, pos);
+        ItemNBTHelper.set(context.getItem(), prefix, NBTTagHelper.putGlobalPos(globalPos));
         return ActionResultType.SUCCESS;
       }
     } else {
-      if (context.getPlayer() == null) {
-        return ActionResultType.PASS;
-      }
       if (context.getPlayer().isSneaking()) {
-        return ActionResultType.SUCCESS;
+        if (block instanceof BlockCorporeaIndex || block instanceof BlockItemQuantizationDevice) {
+          return ActionResultType.SUCCESS;
+        } else {
+          return ActionResultType.CONSUME;
+        }
       }
     }
     return ActionResultType.PASS;

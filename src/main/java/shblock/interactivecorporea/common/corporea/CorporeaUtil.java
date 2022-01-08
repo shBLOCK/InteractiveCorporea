@@ -1,33 +1,27 @@
 package shblock.interactivecorporea.common.corporea;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import shblock.interactivecorporea.IC;
 import shblock.interactivecorporea.common.network.PacketUpdateItemList;
+import shblock.interactivecorporea.common.util.ItemListHelper;
 import shblock.interactivecorporea.common.util.StackHelper;
-import vazkii.botania.api.corporea.CorporeaHelper;
-import vazkii.botania.api.corporea.ICorporeaNode;
-import vazkii.botania.api.corporea.ICorporeaSpark;
+import vazkii.botania.api.corporea.*;
 import vazkii.botania.common.impl.corporea.CorporeaRequest;
+import vazkii.botania.common.impl.corporea.CorporeaResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CorporeaUtil {
   private static final CorporeaAllMatcher ALL_MATCHER = new CorporeaAllMatcher();
 
   public static void init() {
     CorporeaHelper.instance().registerRequestMatcher(new ResourceLocation(IC.MODID, "all"), CorporeaAllMatcher.class, nbt -> new CorporeaAllMatcher());
-  }
-
-  private static void addToListCompacted(List<ItemStack> list, ItemStack stack) {
-    for (ItemStack s : list) {
-      if (StackHelper.equalItemAndTag(s, stack)) {
-        s.grow(stack.getCount());
-        return;
-      }
-    }
-    list.add(stack);
   }
 
   public static List<ItemStack> getAllItemsCompacted(ICorporeaSpark spark) {
@@ -37,8 +31,30 @@ public class CorporeaUtil {
     CorporeaRequest req = new CorporeaRequest(ALL_MATCHER, Integer.MAX_VALUE);
     for (ICorporeaNode node : nodes) {
       List<ItemStack> c = node.countItems(req);
-      c.forEach(stack -> addToListCompacted(result, stack));
+      c.forEach(stack -> ItemListHelper.addToListCompacted(result, stack));
     }
     return result;
+  }
+
+  // Botania copy from CorporeaHelperImpl: request from corporea without calling interceptors
+  public static ICorporeaResult requestItemNoIntercept(ICorporeaRequestMatcher matcher, int itemCount, ICorporeaSpark spark, boolean doit) {
+    List<ItemStack> stacks = new ArrayList<>();
+    CorporeaRequestEvent event = new CorporeaRequestEvent(matcher, itemCount, spark, !doit);
+    if (MinecraftForge.EVENT_BUS.post(event)) {
+      return new CorporeaResult(stacks, 0, 0);
+    }
+
+    List<ICorporeaNode> nodes = CorporeaHelper.instance().getNodesOnNetwork(spark);
+
+    ICorporeaRequest request = new CorporeaRequest(matcher, itemCount);
+    for (ICorporeaNode node : nodes) {
+      if (doit) {
+        stacks.addAll(node.extractItems(request));
+      } else {
+        stacks.addAll(node.countItems(request));
+      }
+    }
+
+    return new CorporeaResult(stacks, request.getFound(), request.getExtracted());
   }
 }

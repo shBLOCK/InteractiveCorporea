@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AnimatedCorporeaItemList {
-  private static float animationLength = 10F;
+  private static double animationLength = 10F;
 
   private int height = 5;
   private String filter = "";
@@ -16,12 +16,13 @@ public class AnimatedCorporeaItemList {
   private List<ItemStack> stackList;
   private final List<AnimatedItemStack> animatedList = new ArrayList<>();
 
+  private boolean isFirstUpdate = true;
+
   public AnimatedCorporeaItemList() {
 
   }
 
-  public void update(float dt) {
-    height = 5;
+  public void update(double dt) {
     for (int i = animatedList.size() - 1; i >= 0; i--) {
       if (animatedList.get(i).update(dt)) {
         animatedList.remove(i);
@@ -87,28 +88,42 @@ public class AnimatedCorporeaItemList {
       }
       if (!found) {
         // did not find equal stack in the new list (the stack has been removed)
-        aniStack.remove(animationLength);
+        aniStack.removeWithAnimation(animationLength);
       }
     }
 
     for (ItemStack stack : list) {
       // any stacks that has not been handled (the stack is newly added)
       AnimatedItemStack aniStack = new AnimatedItemStack(stack);
-      aniStack.playFadeIn(animationLength);
+      if (!isFirstUpdate) {
+        aniStack.playFadeIn(animationLength);
+      }
       animatedList.add(aniStack);
     }
 
     sort();
+
+    isFirstUpdate = false;
   }
 
   public void removeAll() {
     for (AnimatedItemStack stack : animatedList) {
-      stack.remove(animationLength);
+      stack.remove();
     }
   }
 
   public List<AnimatedItemStack> getAnimatedList() {
     return animatedList;
+  }
+
+  public void changeHeight(int delta) {
+    height += delta;
+    if (height < 1) {
+      height = 1;
+    }
+    if (height > 16) {
+      height = 16;
+    }
   }
 
   public void setHeight(int height) {

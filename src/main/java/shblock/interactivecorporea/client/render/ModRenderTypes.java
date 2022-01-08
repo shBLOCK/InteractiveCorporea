@@ -8,14 +8,14 @@ import shblock.interactivecorporea.IC;
 import vazkii.botania.mixin.AccessorRenderState;
 
 public class ModRenderTypes {
-  public static RenderType requestingHaloBackground = RenderType.makeType(
-      IC.MODID + "_requesting_halo_bg",
+  public static RenderType halo = RenderType.makeType(
+      IC.MODID + "halo",
       DefaultVertexFormats.POSITION_COLOR,
-      GL11.GL_TRIANGLE_STRIP,
-      64, false, true,
+      GL11.GL_QUAD_STRIP,
+      64, false, false,
       RenderType.State.getBuilder()
-          .transparency(AccessorRenderState.getTranslucentTransparency())
           .cull(new RenderState.CullState(false))
+          .transparency(AccessorRenderState.getTranslucentTransparency())
           .build(false)
   );
 }

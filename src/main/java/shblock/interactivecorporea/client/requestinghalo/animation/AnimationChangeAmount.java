@@ -3,7 +3,7 @@ package shblock.interactivecorporea.client.requestinghalo.animation;
 public class AnimationChangeAmount extends AbstractAnimation {
   private final int prevAmount;
 
-  public AnimationChangeAmount(float length, int prevAmount) {
+  public AnimationChangeAmount(double length, int prevAmount) {
     super(length);
     this.prevAmount = prevAmount;
   }
@@ -12,7 +12,7 @@ public class AnimationChangeAmount extends AbstractAnimation {
     return prevAmount;
   }
 
-  public float getProgress() {
-    return time;
+  public double getProgress() {
+    return Math.sin(Math.PI * .5F * time);
   }
 }

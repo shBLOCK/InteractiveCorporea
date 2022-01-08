@@ -40,7 +40,7 @@ public class PacketRequestItemListUpdate {
       if (player == null) return;
       ItemStack stack = slot.getStack(player);
       if (!(stack.getItem() instanceof ItemRequestingHalo)) return;
-      GlobalPos pos = ItemRequestingHalo.getBoundPosition(stack);
+      GlobalPos pos = ItemRequestingHalo.getBoundIndexPosition(stack);
       if (pos == null) return;
       ICorporeaSpark spark = CorporeaHelper.instance().getSparkForBlock(WorldHelper.getWorldFromName(pos.getDimension()), pos.getPos());
       if (spark == null) return;

@@ -1,7 +1,7 @@
 package shblock.interactivecorporea.client.requestinghalo.animation;
 
 public class AnimationFadeIn extends AbstractAnimation {
-  public AnimationFadeIn(float length) {
+  public AnimationFadeIn(double length) {
     super(length);
   }
 
