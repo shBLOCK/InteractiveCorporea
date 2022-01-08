@@ -248,6 +248,7 @@ public class RequestingHaloInterface {
   }
 
   public void tick() {
+    itemList.tick();
     if (tick % 20 == 0) {
       requestItemListUpdate();
     }
@@ -325,6 +326,7 @@ public class RequestingHaloInterface {
       RequestingHaloInterfaceHandler.resetKeyboardListener();
       mc.player.playSound(ModSounds.unholyCloak, SoundCategory.PLAYERS, 3F, 1F);
     }
+    itemList.removeAll();
   }
 
   /**
@@ -336,7 +338,7 @@ public class RequestingHaloInterface {
       RequestingHaloInterfaceHandler.resetKeyboardListener();
       closing = true;
       isNormalClose = true;
-      itemList.removeAll();
+//      itemList.removeAll();
       mc.player.playSound(ModSounds.unholyCloak, SoundCategory.PLAYERS, 1F, 1F);
     }
   }

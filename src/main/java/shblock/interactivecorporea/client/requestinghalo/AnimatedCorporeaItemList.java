@@ -1,6 +1,7 @@
 package shblock.interactivecorporea.client.requestinghalo;
 
 import net.minecraft.item.ItemStack;
+import org.lwjgl.system.CallbackI;
 import shblock.interactivecorporea.common.util.StackHelper;
 import shblock.interactivecorporea.common.util.Vec2i;
 
@@ -30,6 +31,12 @@ public class AnimatedCorporeaItemList {
     }
   }
 
+  public void tick() {
+    for (int i = animatedList.size() - 1; i >= 0; i--) {
+      animatedList.get(i).tick();
+    }
+  }
+
   public void handleUpdatePacket(List<ItemStack> itemList) {
     stackList = itemList;
     arrange();
@@ -56,7 +63,7 @@ public class AnimatedCorporeaItemList {
     for (AnimatedItemStack stack : animatedList) {
       if (stack.isRemoved()) break;
       if (!stack.isNew()) {
-        stack.moveTo(new Vec2i(x, y), animationLength);
+        stack.moveTo(x, y);
       } else {
         stack.setPos(x, y);
       }
@@ -77,6 +84,9 @@ public class AnimatedCorporeaItemList {
         ItemStack stack = list.get(i);
 
         if (StackHelper.equalItemAndTag(oldStack, stack)) {
+          if (aniStack.isRemoved()) {
+            aniStack.fadeIn();
+          }
           // found the stack with same item type and NBT data in the new list (no changes / amount change)
           if (oldStack.getCount() != stack.getCount()) {
             aniStack.changeAmount(stack.getCount(), animationLength);
@@ -88,7 +98,7 @@ public class AnimatedCorporeaItemList {
       }
       if (!found) {
         // did not find equal stack in the new list (the stack has been removed)
-        aniStack.removeWithAnimation(animationLength);
+        aniStack.removeWithAnimation();
       }
     }
 
@@ -96,7 +106,7 @@ public class AnimatedCorporeaItemList {
       // any stacks that has not been handled (the stack is newly added)
       AnimatedItemStack aniStack = new AnimatedItemStack(stack);
       if (!isFirstUpdate) {
-        aniStack.playFadeIn(animationLength);
+        aniStack.fadeIn();
       }
       animatedList.add(aniStack);
     }

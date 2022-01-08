@@ -12,14 +12,12 @@ import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.client.gui.GuiUtils;
-import shblock.interactivecorporea.client.requestinghalo.animation.*;
 import shblock.interactivecorporea.client.util.KeyboardHelper;
 import shblock.interactivecorporea.common.util.*;
 import vazkii.botania.client.core.handler.ClientTickHandler;
@@ -34,16 +32,19 @@ public class AnimatedItemStack {
 
   private final ItemStack stack;
   private boolean removed = false;
-  private Vec2i posi = new Vec2i();
+  private boolean forceRemove = false;
+  private final Vec2i posi = new Vec2i();
   private final Vec2d pos = new Vec2d();
-  private AnimationFadeIn animationFadeIn;
-  private AnimationFadeOut animationFadeOut;
-  private AnimationMove animationMove;
-  private AnimationChangeAmount animationChangeAmount;
+  private final Vec2d moveSpd = new Vec2d();
+  private double fade;
+  private double aniAmount;
+  private double stackAniSpd;
+
   private boolean isNew = true;
 
   public AnimatedItemStack(ItemStack stack) {
     this.stack = stack;
+    this.aniAmount = stack.getCount();
   }
 
   /**
@@ -51,47 +52,52 @@ public class AnimatedItemStack {
    * @return If the stack should be removed
    */
   public boolean update(double dt) {
-    if (animationFadeIn != null) {
-      if (animationFadeIn.update(dt)) {
-        animationFadeIn = null;
-      }
+    if (forceRemove) return true;
+    if (removed && fade <= 0.01) return true;
+
+    pos.add(moveSpd.copy().mul(dt));
+
+    if (removed) {
+      fade -= (Math.sin(fade * Math.PI / 2) + 1) * dt * .2;
+      if (fade < 0)
+        fade = 0;
+    } else {
+      fade += (Math.sin((1 - fade) * Math.PI / 2) + 1) * dt * .1;
+      if (fade > 1)
+        fade = 1;
     }
-    if (animationFadeOut != null) {
-      if (animationFadeOut.update(dt)) {
-        animationFadeOut = null;
-        return true;
-      }
-    }
-    if (animationMove != null) {
-      if (animationMove.update(dt)) {
-        pos.set(posi.x, posi.y);
-        animationMove = null;
-      } else {
-        animationMove.getCurrentPos(pos, posi); // Update the double position
-      }
-    }
-    if (animationChangeAmount != null) {
-      if (animationChangeAmount.update(dt)) {
-        animationChangeAmount = null;
-      }
-    }
+
+    aniAmount += stackAniSpd * dt;
 
     isNew = false;
 
     return false;
   }
 
-  private void setupForFadeAnimation(MatrixStack ms) {
-    if (animationFadeIn != null) {
-      float scale = animationFadeIn.getScale();
-      ms.scale(scale, scale, scale);
-    }
+  public void tick() {
+    moveSpd.set(
+        calcSpeed(pos.x, posi.x, moveSpd.x),
+        calcSpeed(pos.y, posi.y, moveSpd.y)
+    );
 
-    //TODO: use changing alpha instead
-    if (animationFadeOut != null) {
-      float scale = animationFadeOut.getScale();
-      ms.scale(scale, scale, scale);
-    }
+    stackAniSpd = Math.min(
+        Math.abs((stack.getCount() - aniAmount) * .5) + .01,
+        Math.abs(stackAniSpd) + Math.abs((stack.getCount() - aniAmount) * .2)
+    ) * Math.signum(stack.getCount() - aniAmount);
+  }
+
+  private double calcSpeed(double current, double dest, double prevSpd) {
+    if (Math.abs(dest - current) < .01) return dest - current;
+    return Math.signum(dest - current) * Math.min(
+        Math.abs(dest - current) * .5 + .01,
+        Math.abs(prevSpd) + .05
+    );
+  }
+
+  private void setupForFadeAnimation(MatrixStack ms) {
+    //TODO: render item with transparency
+    float s = (float) fade;
+    ms.scale(s, s, s);
   }
 
   public void renderItem(MatrixStack ms, IRenderTypeBuffer.Impl buffers) {
@@ -106,38 +112,36 @@ public class AnimatedItemStack {
     ms.pop();
   }
 
+  @SuppressWarnings("DuplicatedCode")
   public void renderAmount(MatrixStack ms, int color, IRenderTypeBuffer.Impl buffers) {
     ms.push();
-
     setupForFadeAnimation(ms);
 
-    String text = TextHelper.formatBigNumber(stack.getCount(), true);
-
-    if (animationChangeAmount != null) {
-      double spacing = 9F;
-      double p = animationChangeAmount.getProgress();
-      double pp = p;
-      boolean rev = animationChangeAmount.getPrevAmount() < stack.getCount();
-      if (rev) {
-        p = -p;
-      } else {
-        ms.translate(0F, -spacing, 0F);
-      }
-      String prevText = TextHelper.formatBigNumber(animationChangeAmount.getPrevAmount(), true);
-      int r = ColorHelper.PackedColor.getRed(color);
-      int g = ColorHelper.PackedColor.getGreen(color);
-      int b = ColorHelper.PackedColor.getBlue(color);
-      int alpha = ColorHelper.PackedColor.getAlpha(color);
-      if (alpha > 251) {
-        alpha = 251;
-      }
-      ms.translate(0F, p * spacing, 0F);
-      renderAmountText(ms, rev ? text : prevText, ColorHelper.PackedColor.packColor((int) (alpha * (rev ? (1F - pp) : pp)) + 4, r, g, b), buffers);
-      ms.translate(0F, spacing, 0F);
-      renderAmountText(ms, rev ? prevText : text, ColorHelper.PackedColor.packColor((int) (alpha * (rev ? pp : (1F - pp))) + 4, r, g, b), buffers);
-    } else {
-      renderAmountText(ms, text, color, buffers);
+    int orgAlpha = color >>> 24;
+    if (orgAlpha > 250) { // ?????????????
+      orgAlpha = 250;
     }
+    int colorNoAlpha = color & 0x00FFFFFF;
+
+    double spacing = 9;
+    int numA = MathHelper.floor(aniAmount);
+    int numB = MathHelper.ceil(aniAmount);
+    double distA = numA - aniAmount;
+    double distB = numB - aniAmount;
+    String textA = TextHelper.formatBigNumber(numA, true);
+    String textB = TextHelper.formatBigNumber(numB, true);
+
+    ms.push();
+    ms.translate(0, distA * spacing, 0);
+    int colA = colorNoAlpha | (int) (orgAlpha * (1 - Math.abs(distA)) + 5) << 24;
+    renderAmountText(ms, textA, colA, buffers);
+    ms.pop();
+
+    ms.push();
+    ms.translate(0, distB * spacing, 0);
+    int colB = colorNoAlpha | (int) (orgAlpha * (1 - Math.abs(distB)) + 5) << 24;
+    renderAmountText(ms, textB, colB, buffers);
+    ms.pop();
 
     ms.pop();
   }
@@ -208,27 +212,22 @@ public class AnimatedItemStack {
     return stack;
   }
 
-  public void playFadeIn(double length) {
-//    shouldDisplay = true;
-    animationFadeIn = new AnimationFadeIn(length);
+  public void fadeIn() {
+    removed = false;
   }
 
   public boolean isNew() {
     return isNew;
   }
 
-//  public void playFadeOut(double length) {
-//    shouldDisplay = false;
-//    animationFadeOut = new AnimationFadeOut(length);
-//  }
-
   public void remove() {
     removed = true;
+    forceRemove = true;
   }
 
-  public void removeWithAnimation(double animationLength) {
+  public void removeWithAnimation() {
     remove();
-    animationFadeOut = new AnimationFadeOut(animationLength);
+    forceRemove = false;
   }
 
   public boolean isRemoved() {
@@ -244,25 +243,24 @@ public class AnimatedItemStack {
     pos.set(x, y);
   }
 
-  public void moveTo(Vec2i dest, double animationLength) {
-    animationMove = new AnimationMove(animationLength, posi);
-    posi = dest;
+  public void moveTo(int x, int y) {
+//    animationMove = new AnimationMove(animationLength, posi);
+    posi.set(x, y);
   }
 
-  public Vec2i getPrevPosi() {
-    return animationMove == null ? posi : animationMove.getPrev();
-  }
-
-  public Vec2i getPosi() {
-    return posi;
-  }
+//  public Vec2i getPrevPosi() {
+//    return animationMove == null ? posi : animationMove.getPrev();
+//  }
+//
+//  public Vec2i getPosi() {
+//    return posi;
+//  }
 
   public Vec2d getPos() {
     return pos;
   }
 
   public void changeAmount(int amount, double animationLength) {
-    this.animationChangeAmount = new AnimationChangeAmount(animationLength, stack.getCount());
     stack.setCount(amount);
   }
 }
