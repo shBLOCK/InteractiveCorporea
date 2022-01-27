@@ -3,6 +3,8 @@ The goal of the mod is to make the corporea system in Botania easier to use and 
 ###This mod has some fancy animations, so watch this **[spotlight video](https://streamable.com/0jrgbv "spotlight")** that demonstrates the main features of the mod.    
 ##Example Image
 ![Halo Interface Example](https://github.com/shBLOCK/InteractiveCorporea/blob/master/images/interface_example.png?raw=true "Halo Interface Example")
+##Known Issues
+- In a server, the interface is only visible to you. Syncing the animations is impractical, but I might find some alternative ways of displaying it in the future.
 ##Future Plans
 - A wormhole system that allows teleporting items thrown towards the halo interface to your base (wormhole render is shader-based, and has a warp effect around it)
 - Auto crafting system
