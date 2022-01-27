@@ -32,7 +32,7 @@
   "interactive_corporea.page.requestingHalo.course.3": "如果你转向物品列表的开头和结尾处,你会感到一股力量将你向反方向转动.$(br2)默认情况下物品列表的行数是五行,你可以通过按住Ctrl并滚滚轮来改变它.$(br2)$(l)重要!!!:/$ 显示环形界面和更新物品列表需要消耗很少一部分魔力,虽然不多,但是当魔力耗尽时界面会$(thing)立即关闭/$!",
   "interactive_corporea.page.requestingHalo.module.receiver.title": "量子接收器",
   "interactive_corporea.page.requestingHalo.module.receiver": "这个$(item)微光/$可以与$(l:interactive_corporea:ender/quantization_device)量子化设备/$中的微光连接,使设备可以将量子化的物品粒子传送到你的位置,并重新组合成原物品.$(br2)要请求一个物品,你只需在界面上点击它. 一次性请求多个物品的方法类似于$(l:ender/corporea_crystal_cube)多媒体水晶魔方/$.",
-  "interactive_corporea.page.requestingHalo.module.receiver_1": "当然,这个过程会消耗魔力. 但是所有操作都是在量子化设备中进行的,重新组装的过程也是,所以你只需给$(item)量子化设备/$提供魔力即可. 最终的魔力消耗取决于传输的物品数量.",
+  "interactive_corporea.page.requestingHalo.module.receiver_1": "$(l)注意/$: 这个请求$(l)不会/$触发任何$(l:ender/corporea_interceptor)多媒体拦截器/$. 但是一个独立的自动合成系统已经在计划中了.$(br2)当然,这个过程会消耗魔力. 但是所有操作都是在量子化设备中进行的,重新组装的过程也是,所以你只需给$(item)量子化设备/$提供魔力即可. 最终的魔力消耗取决于传输的物品数量.",
   "interactive_corporea.page.requestingHalo.module.search.title": "搜索",
   "interactive_corporea.page.requestingHalo.module.search": "这个模块可以按你的要求过滤显示的物品列表.$(br2)安装这个模块后，你可以在环形界面顶端看到一个$(thing)搜索栏/$. 点击魔法按钮\"$(thing)$(l)$(k:interactive_corporea.requesting_halo.search)/$\"来激活或退出它.",
   "interactive_corporea.page.requestingHalo.module.search_1": "这个搜索也支持一些特殊的前缀.$(li)$(l)@/$: 模组名$(li)$(l)#/$: Tooltip$(li)$(l)$/$: 物品标签(原矿物词典)$(li)$(l)%%/$: 创造模式物品栏$(li)$(l)&/$: Resource Id",
