@@ -11,4 +11,4 @@ The goal of the mod is to make the corporea system in Botania easier to use and 
 - A wormhole system that allows teleporting items thrown towards the halo interface to your base (wormhole render is shader-based, and has a warp effect around it)
 - Auto crafting system
 ##Modpack Policy
-Of course! You can use this mod in your modpack.
+Of course! You are welcomed use this mod in your modpack.
