@@ -1,0 +1,10 @@
+{
+  "halo.open": { "sounds": ["interactive_corporea:halo_open"], "subtitle": "interactive_corporea.subtitle.halo.open" },
+  "halo.close": { "sounds": ["interactive_corporea:halo_close"], "subtitle": "interactive_corporea.subtitle.halo.close" },
+  "halo.list_update": { "sounds": ["interactive_corporea:list_update"], "subtitle": "interactive_corporea.subtitle.halo.list_update" },
+  "halo.select": { "sounds": ["interactive_corporea:select"], "subtitle": "interactive_corporea.subtitle.halo.select" },
+  "halo.request": { "sounds": ["interactive_corporea:request"], "subtitle": "interactive_corporea.subtitle.halo.request" },
+  "halo.reach_edge": { "sounds": ["interactive_corporea:reach_edge"], "subtitle": "interactive_corporea.subtitle.halo.reach_edge" },
+  "quantum.send": { "sounds": ["interactive_corporea:quantum_send"], "subtitle": "interactive_corporea.subtitle.quantum.send" },
+  "quantum.receive": { "sounds": ["interactive_corporea:quantum_receive"], "subtitle": "interactive_corporea.subtitle.quantum.receive" }
+}

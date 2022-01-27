@@ -1,6 +1,5 @@
 package shblock.interactivecorporea.client.particle;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
@@ -60,7 +59,6 @@ public class QuantizationParticle extends Particle {
 
   @Override
   public void renderParticle(IVertexBuilder buffer, ActiveRenderInfo renderInfo, float pt) {
-    //TODO: fix transparent part of the particle culling things behind it
     Vector3d vector3d = renderInfo.getProjectedView();
     float x = (float) (MathHelper.lerp(pt, this.prevPosX, this.posX) - vector3d.getX());
     float y = (float) (MathHelper.lerp(pt, this.prevPosY, this.posY) - vector3d.getY());
@@ -108,11 +106,8 @@ public class QuantizationParticle extends Particle {
 
     int j = this.getBrightnessForRender(pt);
 
-//    float a = (float) Math.sin((1F - MathHelper.clamp(norAge, 0F, .75F) * 1.33F) * Math.PI / 2F);
-    float a = (float) -MathHelper.clamp(norAge, 0F, .75F);
+    float a = (float) ((MathHelper.clamp(1 - norAge, .5, 1) - .5) * 2);
 
-    RenderSystem.enablePolygonOffset();
-    RenderSystem.polygonOffset(1F, 1F);
     mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
     builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
     buffer.pos(rPosItem[0].getX(), rPosItem[0].getY(), rPosItem[0].getZ()).color(1F, 1F, 1F, a).tex(itemMaxU, itemMaxV).lightmap(j).endVertex();
@@ -120,19 +115,19 @@ public class QuantizationParticle extends Particle {
     buffer.pos(rPosItem[2].getX(), rPosItem[2].getY(), rPosItem[2].getZ()).color(1F, 1F, 1F, a).tex(itemMinU, itemMinV).lightmap(j).endVertex();
     buffer.pos(rPosItem[3].getX(), rPosItem[3].getY(), rPosItem[3].getZ()).color(1F, 1F, 1F, a).tex(itemMinU, itemMaxV).lightmap(j).endVertex();
     tessellator.draw();
-    RenderSystem.disablePolygonOffset();
 
-    TextureAtlasSprite sprite = animatedSprite.get(age, maxAge);
+    int directionalAge = quantize ? age : maxAge - age;
+    TextureAtlasSprite sprite = animatedSprite.get(directionalAge, (int) (maxAge * 1.08));
     float minU = sprite.getMinU();
     float maxU = sprite.getMaxU();
     float minV = sprite.getMinV();
     float maxV = sprite.getMaxV();
 
     a = (float) Math.sin(norAge * Math.PI);
-//    a = (float) norAge;
     float r = itemColor[0];
     float g = itemColor[1];
     float b = itemColor[2];
+    a = 1F;
 
     mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_PARTICLES_TEXTURE);
     builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
@@ -147,12 +142,18 @@ public class QuantizationParticle extends Particle {
     @Override
     public void beginRender(BufferBuilder bufferBuilder, TextureManager textureManager) {
       RenderSystem.depthMask(true);
+      RenderSystem.alphaFunc(GL11.GL_ALWAYS, 0F);
+      RenderSystem.defaultAlphaFunc();
       RenderSystem.enableBlend();
-//      RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+      RenderSystem.defaultBlendFunc();
+//      RenderSystem.blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ZERO, GL11.GL_ONE);
     }
 
     @Override
     public void finishRender(Tessellator tesselator) {
+      RenderSystem.defaultBlendFunc();
+      RenderSystem.defaultAlphaFunc();
+      RenderSystem.depthMask(true);
 //      tesselator.draw();
     }
 

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CWC",
+    "EIE",
+    "CSC"
+  ],
+  "key": {
+    "C": { "item": "botania:corporea_crystal_cube" },
+    "S": { "item": "botania:starfield" },
+    "I": { "item": "botania:corporea_index" },
+    "E": { "item": "botania:elementium_ingot" },
+    "W": { "item": "botania:rainbow_rod" }
+  },
+  "result": {
+    "item": "interactive_corporea:requesting_halo",
+    "count": 1
+  }
+}

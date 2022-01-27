@@ -1,0 +1,15 @@
+{
+  "vertex": "interactive_corporea:wormhole",
+  "fragment": "interactive_corporea:wormhole",
+  "attributes": [ "Position" ],
+  "samplers": [
+    { "name": "DiffuseSampler" },
+    { "name": "DiffuseDepthSampler" }
+  ],
+  "uniforms": [],
+  "blend": {
+    "func": "add",
+    "srcrgb": "one",
+    "dstrgb": "zero"
+  }
+}

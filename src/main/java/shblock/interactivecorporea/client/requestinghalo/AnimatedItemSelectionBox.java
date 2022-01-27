@@ -34,12 +34,14 @@ public class AnimatedItemSelectionBox {
   );
 
   private AnimatedItemStack target;
+  private AnimatedItemStack lastTarget;
   private final Vec2d pos = new Vec2d();
   private float alpha;
   private float requestAnimationTime = -1F;
+  private Runnable soundPlayer;
 
-  public AnimatedItemSelectionBox() {
-
+  public AnimatedItemSelectionBox(Runnable soundPlayer) {
+    this.soundPlayer = soundPlayer;
   }
 
   public void setTarget(AnimatedItemStack target) {
@@ -64,6 +66,10 @@ public class AnimatedItemSelectionBox {
     }
 
     if (target != null) {
+      if (target != lastTarget) {
+        soundPlayer.run();
+      }
+
       Vec2d targetPos = target.getPos();
       double spdModifier = Math.sin(MathHelper.clamp(pos.distanceTo(targetPos), 0F, .5F) * Math.PI);
       spdModifier = MathHelper.clamp(spdModifier, 0.1F, 0.5F);
@@ -77,6 +83,7 @@ public class AnimatedItemSelectionBox {
         target = null;
       }
     }
+    lastTarget = target;
   }
 
   public Vec2d getPos() {

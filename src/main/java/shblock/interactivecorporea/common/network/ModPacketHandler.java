@@ -2,7 +2,9 @@ package shblock.interactivecorporea.common.network;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -25,6 +27,7 @@ public class ModPacketHandler {
     CHANNEL.registerMessage(id++, PacketUpdateItemList.class, PacketUpdateItemList::encode, PacketUpdateItemList::decode, PacketUpdateItemList::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     CHANNEL.registerMessage(id++, PacketRequestItem.class, PacketRequestItem::encode, PacketRequestItem::decode, PacketRequestItem::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
     CHANNEL.registerMessage(id++, PacketPlayQuantizationEffect.class, PacketPlayQuantizationEffect::encode, PacketPlayQuantizationEffect::decode, PacketPlayQuantizationEffect::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+    CHANNEL.registerMessage(id++, PacketRequestResult.class, PacketRequestResult::encode, PacketRequestResult::decode, PacketRequestResult::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
   }
 
   public static void sendToPlayer(ServerPlayerEntity player, Object message) {

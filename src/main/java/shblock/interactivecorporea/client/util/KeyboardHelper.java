@@ -3,6 +3,8 @@ package shblock.interactivecorporea.client.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.InputMappings;
 
+import static org.lwjgl.glfw.GLFW.*;
+
 public class KeyboardHelper {
   private static final long window = Minecraft.getInstance().getMainWindow().getHandle();
 
@@ -15,7 +17,7 @@ public class KeyboardHelper {
   }
 
   public static boolean hasShiftDown() {
-    return InputMappings.isKeyDown(window, 340) || InputMappings.isKeyDown(window, 344);
+    return InputMappings.isKeyDown(window, GLFW_KEY_LEFT_SHIFT) || InputMappings.isKeyDown(window, GLFW_KEY_RIGHT_SHIFT);
   }
 
   public static boolean hasAltDown() {

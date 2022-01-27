@@ -1,6 +1,8 @@
 package shblock.interactivecorporea.client.requestinghalo;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -18,13 +20,14 @@ import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.client.gui.GuiUtils;
+import org.lwjgl.opengl.GL11;
 import shblock.interactivecorporea.client.util.KeyboardHelper;
 import shblock.interactivecorporea.common.util.*;
 import vazkii.botania.client.core.handler.ClientTickHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 
-//TODO: remake the animation system, use a system similar to the selection box, but use a changing speed system so that is looks smooth
 @MethodsReturnNonnullByDefault
 public class AnimatedItemStack {
   private static final Minecraft mc = Minecraft.getInstance();
@@ -39,6 +42,8 @@ public class AnimatedItemStack {
   private double fade;
   private double aniAmount;
   private double stackAniSpd;
+
+  private final List<RequestResultAnimation> requestResultAnimations = new ArrayList<>();
 
   private boolean isNew = true;
 
@@ -95,7 +100,6 @@ public class AnimatedItemStack {
   }
 
   private void setupForFadeAnimation(MatrixStack ms) {
-    //TODO: render item with transparency
     float s = (float) fade;
     ms.scale(s, s, s);
   }
@@ -118,9 +122,6 @@ public class AnimatedItemStack {
     setupForFadeAnimation(ms);
 
     int orgAlpha = color >>> 24;
-    if (orgAlpha > 250) { // ?????????????
-      orgAlpha = 250;
-    }
     int colorNoAlpha = color & 0x00FFFFFF;
 
     double spacing = 9;
@@ -133,20 +134,23 @@ public class AnimatedItemStack {
 
     ms.push();
     ms.translate(0, distA * spacing, 0);
-    int colA = colorNoAlpha | (int) (orgAlpha * (1 - Math.abs(distA)) + 5) << 24;
+    int colA = colorNoAlpha | (int) (orgAlpha * (1 - Math.abs(distA))) << 24;
     renderAmountText(ms, textA, colA, buffers);
     ms.pop();
 
     ms.push();
     ms.translate(0, distB * spacing, 0);
-    int colB = colorNoAlpha | (int) (orgAlpha * (1 - Math.abs(distB)) + 5) << 24;
+    int colB = colorNoAlpha | (int) (orgAlpha * (1 - Math.abs(distB))) << 24;
     renderAmountText(ms, textB, colB, buffers);
     ms.pop();
 
     ms.pop();
   }
 
-  private void renderAmountText(MatrixStack ms, String text, int color, IRenderTypeBuffer.Impl buffers) {
+  protected static void renderAmountText(MatrixStack ms, String text, int color, IRenderTypeBuffer.Impl buffers) {
+    int alpha = color >>> 24;
+    color = (color & 0x00FFFFFF) | (int) (MathHelper.lerp(alpha / 255D, 5D, 249D)) << 24; //?????????????????
+
     ms.push();
 
     FontRenderer font = mc.fontRenderer;
@@ -158,13 +162,26 @@ public class AnimatedItemStack {
 
     Matrix4f mat = ms.getLast().getMatrix();
 
-    font.renderString(text, 0, 0, color, false, mat, buffers, false, 0, 0xF000F0);
-
-    ms.translate(0, 0, 0.01);
-    mat = ms.getLast().getMatrix();
-
     int shadeColor = (color & 16579836) >> 2 | color & -16777216;
-    font.renderString(text, 1, 1, shadeColor, false, mat, buffers, false, 0, 0xF000F0);
+    font.renderString(text, 1, 1, shadeColor, false, mat, buffers, true, 0, 0xF000F0);
+    buffers.finish();
+
+    font.renderString(text, 0, 0, color, false, mat, buffers, true, 0, 0xF000F0);
+    buffers.finish();
+
+    ms.pop();
+
+  }
+
+  public void renderRequestResultAnimations(MatrixStack ms, IRenderTypeBuffer.Impl buffers) {
+    ms.push();
+
+    for (int i = requestResultAnimations.size() - 1; i >= 0; i--) {
+      RequestResultAnimation animation = requestResultAnimations.get(i);
+      if (animation.render(ms, buffers)) {
+        requestResultAnimations.remove(i);
+      }
+    }
 
     ms.pop();
   }
@@ -183,7 +200,8 @@ public class AnimatedItemStack {
       int width = window.getScaledWidth();
       int height = window.getScaledHeight();
       int bgCol = MathHelper.hsvToRGB(ClientTickHandler.total % 200F / 200F, 1F, 1F);
-      bgCol |= ((int) (((Math.sin(ClientTickHandler.total / 10F) + 1F) * .03F + .04F) * 0xFF)) << 24;
+      bgCol |= 150 << 24;
+//      bgCol |= 16 << 24;
       int borderColStart = MathHelper.hsvToRGB((ClientTickHandler.total + 66.66F) % 200F / 200F, 1F, 1F) | 0xFF000000;
       int borderColEnd = MathHelper.hsvToRGB((ClientTickHandler.total + 133.33F) % 200F / 200F, 1F, 1F) | 0xFF000000;
       GuiUtils.drawHoveringText(
@@ -206,6 +224,10 @@ public class AnimatedItemStack {
       itemMS.scale(3F, 3F, 3F);
       ItemRenderHelper.renderItemAndEffectIntoGUI(stack, width / 2 - 48, height / 2 - 8, itemMS);
     }
+  }
+
+  public void handleRequestResult(int successAmount) {
+    requestResultAnimations.add(new RequestResultAnimation(successAmount));
   }
 
   public ItemStack getStack() {
@@ -262,5 +284,32 @@ public class AnimatedItemStack {
 
   public void changeAmount(int amount, double animationLength) {
     stack.setCount(amount);
+  }
+}
+
+class RequestResultAnimation {
+  private double progress;
+  private final int amount;
+
+  public RequestResultAnimation(int amount) {
+    this.amount = amount;
+  }
+
+  public boolean render(MatrixStack ms, IRenderTypeBuffer.Impl buffers) {
+    progress += (ClientTickHandler.delta * .05);
+    if (progress >= 1) return true;
+
+    ms.push();
+
+    String text = "-" + amount;
+    double w = Minecraft.getInstance().fontRenderer.getCharacterManager().func_238350_a_(text);
+    ms.translate(-w / 2, Math.sin(progress * Math.PI / 2) * 10, 0);
+    int color = amount == 0 ? 0xFF0000 : 0x00FF00;
+    color |= (int) ((1 - Math.sin(progress * Math.PI / 2)) * 255) << 24;
+    AnimatedItemStack.renderAmountText(ms, text, color, buffers);
+
+    ms.pop();
+
+    return false;
   }
 }

@@ -12,7 +12,7 @@ public enum SortMode {
     if (a.getCount() == b.getCount()) {
       return DICT.getSorter().compare(a, b);
     }
-    return Integer.compare(a.getCount(), b.getCount());
+    return -Integer.compare(a.getCount(), b.getCount());
   });
 
   private Comparator<ItemStack> sorter;

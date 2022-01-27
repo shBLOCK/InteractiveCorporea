@@ -1,10 +1,11 @@
 package shblock.interactivecorporea.common.network;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent;
-import shblock.interactivecorporea.client.particle.QuantizationParticleData;
+import shblock.interactivecorporea.common.util.ClientSidedCode;
 import shblock.interactivecorporea.common.util.NetworkHelper;
 import vazkii.botania.common.core.helper.Vector3;
 
@@ -13,8 +14,7 @@ import java.util.Random;
 import java.util.function.Supplier;
 
 public class PacketPlayQuantizationEffect {
-  private static final Minecraft mc = Minecraft.getInstance();
-  private static final Random RAND = new Random();
+  public static final Random RAND = new Random();
 
   public static final int QUANTIZATION = 0;
   public static final int CONSTRUCTION = 1;
@@ -72,35 +72,7 @@ public class PacketPlayQuantizationEffect {
     }
   }
 
-  @SuppressWarnings("ConstantConditions")
   public void handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> {
-      if (mc.world == null) return;
-      QuantizationParticleData data;
-      switch (type) {
-        case QUANTIZATION:
-          for (int i = 0; i < 512; i++) {
-            double particleDist = 2;
-            Vector3 dest = new Vector3(RAND.nextDouble() * 2 - 1, RAND.nextDouble() * 2 - 1, RAND.nextDouble() * 2 - 1)
-                .normalize()
-                .multiply(particleDist);
-            data = new QuantizationParticleData(dest, time, stack, true);
-            mc.world.addParticle(data, pos.x, pos.y, pos.z, 0, 0, 0);
-          }
-          break;
-        case CONSTRUCTION:
-          Vector3 rotBase = normal.perpendicular().normalize().multiply(.5);
-          for (int i = 0; i < 128; i++) {
-            Vector3 roted = rotBase.rotate(RAND.nextDouble() * Math.PI * 2, normal);
-            Vector3 p = roted.add(pos);
-            data = new QuantizationParticleData(roted.negate(), time, stack, false);
-            mc.world.addParticle(data, p.x, p.y, p.z, 0, 0, 0);
-          }
-          break;
-        default:
-          assert false;
-      }
-    });
-    ctx.get().setPacketHandled(true);
+    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientSidedCode.handlePacketPlayQuantizationEffect(type, stack, time, pos, normal, ctx));
   }
 }

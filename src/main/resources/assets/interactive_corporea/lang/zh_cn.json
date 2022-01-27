@@ -1,0 +1,58 @@
+{
+  "itemGroup.interactive_corporea": "交互多媒体",
+
+  "item.interactive_corporea.requesting_halo": "多媒体请求环",
+
+  "block.interactive_corporea.item_quantization_device": "量子化设备",
+
+  "interactive_corporea.tooltip.shift_for_more": "§7按住Shift来查看更多信息",
+  "interactive_corporea.requesting_halo.tooltip.null": "§4无",
+  "interactive_corporea.requesting_halo.tooltip.index_pos": "§3绑定的多媒体索引位置: §2",
+  "interactive_corporea.requesting_halo.tooltip.sender_pos": "§3绑定的量子化设备位置: §2",
+  "interactive_corporea.requesting_halo.tooltip.modules_prefix": "§d模块: §r",
+
+  "interactive_corporea.halo_module.hud": "信息显示",
+  "interactive_corporea.halo_module.receive": "量子接收器",
+  "interactive_corporea.halo_module.search": "搜索",
+  "interactive_corporea.halo_module.update": "自动更新",
+  "interactive_corporea.halo_module.amount_sort": "排序",
+
+  "key.interactive_corporea.category": "交互式多媒体",
+  "key.interactive_corporea.requesting_halo": "打开/关闭 多媒体请求环",
+  "key.interactive_corporea.requesting_halo.search": "多媒体请求环 搜索",
+  "key.interactive_corporea.requesting_halo.request_update": "多媒体请求环 更新物品列表",
+
+  "interactive_corporea.entry.requesting_halo": "多媒体请求环",
+  "interactive_corporea.page.requestingHalo.description": "你可以用$(item)多媒体请求环/$来更方便地浏览和请求一个多媒体网络中的物品. 也有很多可以安装的$(thing)模块/$来提供更多功能.",
+  "interactive_corporea.page.requestingHalo.example": "一个多媒体请求环界面",
+  "interactive_corporea.page.requestingHalo.course.0.title": "使用方法",
+  "interactive_corporea.page.requestingHalo.course.0": "要使用$(item)多媒体请求环/$,你首先五幺把它$(thing)绑定/$到一个多媒体网络. 要绑定到一个方块,只需潜行将它对着目标方块使用. 你可以从$(thing)Tooltip/$中看到当前绑定的位置.$(li)绑定到一个$(l:ender/corporea_index)多媒体索引/$使请求环可以和它交流信息,然后将得到的物品列表$(thing)显示/$在界面上./$",
+  "interactive_corporea.page.requestingHalo.course.1": "$(li)绑定到一个$(l:interactive_corporea:ender/quantization_device)量子化设备/$让这个设备可以\"传送\"被请求的物品到你的位置. (在$(l:interactive_corporea:ender/quantization_device#module_receiver)量子接收器/$章节中了解更多)/$<br>只绑定到$(item)多媒体索引/$也没问题,只不过你不能从网络中请求物品.$(br2)在(至少)绑定到$(item)多媒体索引/$后,你可以在手中使用它或把它放在你的物品栏和饰品栏然后按下魔法按钮\"$(thing)$(l)$(k:interactive_corporea.requesting_halo)/$\"来打开(或关闭)环形界面.",
+  "interactive_corporea.page.requestingHalo.course.2": "显示的物品列表在没有安装插件的情况下不会自动更新,但是你可以通过魔法按钮\"$(thing)$(l)$(k:interactive_corporea.requesting_halo.request_update)/$\"来进行手动更新.$(br2)在界面种话,你只需$(thing)左右转头/$便可浏览网络中的所有物品. 如果你网络中的物品太多,你甚至可以在转过一整圈后继续转,这样你就可以看到\"$(thing)下一页/$\"的物品.",
+  "interactive_corporea.page.requestingHalo.course.3": "如果你转向物品列表的开头和结尾处,你会感到一股力量将你向反方向转动.$(br2)默认情况下物品列表的行数是五行,你可以通过按住Ctrl并滚滚轮来改变它.$(br2)$(l)重要!!!:/$ 显示环形界面和更新物品列表需要消耗很少一部分魔力,虽然不多,但是当魔力耗尽时界面会$(thing)立即关闭/$!",
+  "interactive_corporea.page.requestingHalo.module.receiver.title": "量子接收器",
+  "interactive_corporea.page.requestingHalo.module.receiver": "这个$(item)微光/$可以与$(l:interactive_corporea:ender/quantization_device)量子化设备/$中的微光连接,使设备可以将量子化的物品粒子传送到你的位置,并重新组合成原物品.$(br2)要请求一个物品,你只需在界面上点击它. 一次性请求多个物品的方法类似于$(l:ender/corporea_crystal_cube)多媒体水晶魔方/$.",
+  "interactive_corporea.page.requestingHalo.module.receiver_1": "当然,这个过程会消耗魔力. 但是所有操作都是在量子化设备中进行的,重新组装的过程也是,所以你只需给$(item)量子化设备/$提供魔力即可. 最终的魔力消耗取决于传输的物品数量.",
+  "interactive_corporea.page.requestingHalo.module.search.title": "搜索",
+  "interactive_corporea.page.requestingHalo.module.search": "这个模块可以按你的要求过滤显示的物品列表.$(br2)安装这个模块后，你可以在环形界面顶端看到一个$(thing)搜索栏/$. 点击魔法按钮\"$(thing)$(l)$(k:interactive_corporea.requesting_halo.search)/$\"来激活或退出它.",
+  "interactive_corporea.page.requestingHalo.module.search_1": "这个搜索也支持一些特殊的前缀.$(li)$(l)@/$: 模组名$(li)$(l)#/$: Tooltip$(li)$(l)$/$: 物品标签(原矿物词典)$(li)$(l)%%/$: 创造模式物品栏$(li)$(l)&/$: Resource Id",
+  "interactive_corporea.page.requestingHalo.module.hud.title": "信息显示",
+  "interactive_corporea.page.requestingHalo.module.hud": "安装窥魔之镜让你可以看到指向的物品的详细信息,你只需按住\"Alt\".",
+  "interactive_corporea.page.requestingHalo.module.update.title": "自动更新",
+  "interactive_corporea.page.requestingHalo.module.update": "这个悬浮沙漏可以有规律地每一秒触发一次物品列表更新,使你可以实时看到网络中物品的变化. 但是这会消耗和手动更新一样的魔力.",
+  "interactive_corporea.page.requestingHalo.module.amount_sort.title": "排序",
+  "interactive_corporea.page.requestingHalo.module.amount_sort": "主媒体火花的物品管理能力也可以帮助整理它们,这个模块可以让界面上显示的物品按物品数量从大到小的顺序排列.",
+
+  "interactive_corporea.entry.quantization_device": "量子化设备",
+  "interactive_corporea.page.quantizationDevice.0": "用$(item)微光/$的力量,这个设备可以把物品分解为很多\"$(thing)量子粒子/$\". 这些粒子非常小和轻,以至于它们可以被瞬间传送到世界中的任何地方,然后在那里被重新组合成原物品.",
+  "interactive_corporea.page.quantizationDevice.1": "不过,这个处理过程需要消耗一小点魔力,当然消耗的量取决于处理的物品数量.$(br2)要给它注入魔力,你只需向它发射$(thing)魔力脉冲/$. 处理一个物品不会消耗很多魔力,所以为了防止发射过多魔力导致的魔力浪费,你可以用$(item)红石比较器/$来读取其中的魔力量,就像$(item)魔力池/$一样.$(br2)请在$(l:interactive_corporea:ender/requesting_halo#module_receiver)多媒体请求环的量子接收器模块/$章节了解更多.",
+
+  "interactive_corporea.subtitle.halo.open": "环形界面:打开",
+  "interactive_corporea.subtitle.halo.close": "环形界面:关闭",
+  "interactive_corporea.subtitle.halo.list_update": "环形界面:更新",
+  "interactive_corporea.subtitle.halo.select": "环形界面:选择",
+  "interactive_corporea.subtitle.halo.request": "环形界面:请求",
+  "interactive_corporea.subtitle.halo.reach_edge": "环形界面:到达边缘",
+  "interactive_corporea.subtitle.quantum.send": "量子化发送",
+  "interactive_corporea.subtitle.quantum.receive": "量子化接受"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "interactive_corporea.entry.quantization_device",
+  "category": "botania:ender",
+  "icon": "interactive_corporea:item_quantization_device",
+  "entry_color": "aa00aa",
+  "advancement": "botania:main/elf_lexicon_pickup",
+  "pages": [
+    {
+      "type": "crafting",
+      "text": "interactive_corporea.page.quantizationDevice.0",
+      "recipe": "interactive_corporea:item_quantization_device"
+    },
+    {
+      "type": "text",
+      "text": "interactive_corporea.page.quantizationDevice.1"
+    }
+  ]
+}

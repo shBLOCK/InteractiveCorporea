@@ -1,0 +1,79 @@
+{
+  "name": "interactive_corporea.entry.requesting_halo",
+  "category": "botania:ender",
+  "icon": "interactive_corporea:requesting_halo",
+  "entry_color": "aa00aa",
+  "advancement": "botania:main/elf_lexicon_pickup",
+  "priority": true,
+  "pages": [
+    {
+      "type": "crafting",
+      "text": "interactive_corporea.page.requestingHalo.description",
+      "recipe": "interactive_corporea:requesting_halo"
+    },
+    {
+      "type": "image",
+      "text": "interactive_corporea.page.requestingHalo.example",
+      "images": [
+        "interactive_corporea:textures/lexicon/example1.png"
+      ],
+      "border": true
+    },
+    {
+      "type": "text",
+      "title": "interactive_corporea.page.requestingHalo.course.0.title",
+      "text": "interactive_corporea.page.requestingHalo.course.0"
+    },
+    {
+      "type": "text",
+      "text": "interactive_corporea.page.requestingHalo.course.1"
+    },
+    {
+      "type": "text",
+      "text": "interactive_corporea.page.requestingHalo.course.2"
+    },
+    {
+      "type": "text",
+      "text": "interactive_corporea.page.requestingHalo.course.3"
+    },
+    {
+      "type": "spotlight",
+      "item": "botania:light_relay",
+      "title": "interactive_corporea.page.requestingHalo.module.receiver.title",
+      "text": "interactive_corporea.page.requestingHalo.module.receiver",
+      "anchor": "module_receiver"
+    },
+    {
+      "type": "text",
+      "text": "interactive_corporea.page.requestingHalo.module.receiver_1"
+    },
+    {
+      "type": "spotlight",
+      "item": "botania:itemfinder",
+      "title": "interactive_corporea.page.requestingHalo.module.search.title",
+      "text": "interactive_corporea.page.requestingHalo.module.search"
+    },
+    {
+      "type": "text",
+      "text": "interactive_corporea.page.requestingHalo.module.search_1"
+    },
+    {
+      "type": "spotlight",
+      "item": "botania:monocle",
+      "title": "interactive_corporea.page.requestingHalo.module.hud.title",
+      "text": "interactive_corporea.page.requestingHalo.module.hud"
+    },
+    {
+      "type": "spotlight",
+      "item": "botania:hourglass",
+      "title": "interactive_corporea.page.requestingHalo.module.update.title",
+      "text": "interactive_corporea.page.requestingHalo.module.update"
+    },
+    {
+      "type": "spotlight",
+      "item": "botania:corporea_spark_master",
+      "title": "interactive_corporea.page.requestingHalo.module.amount_sort.title",
+      "text": "interactive_corporea.page.requestingHalo.module.amount_sort"
+    }
+  ]
+}

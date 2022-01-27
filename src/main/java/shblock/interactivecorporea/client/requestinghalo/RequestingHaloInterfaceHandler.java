@@ -1,35 +1,30 @@
 package shblock.interactivecorporea.client.requestinghalo;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundCategory;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
 import shblock.interactivecorporea.IC;
+import shblock.interactivecorporea.ModSounds;
 import shblock.interactivecorporea.common.item.ItemRequestingHalo;
-import shblock.interactivecorporea.common.network.ModPacketHandler;
-import shblock.interactivecorporea.common.network.PacketRequestItemListUpdate;
 import shblock.interactivecorporea.common.util.CISlotPointer;
 import shblock.interactivecorporea.common.util.CurioSlotPointer;
 import shblock.interactivecorporea.common.util.ToolItemHelper;
-import vazkii.botania.common.core.handler.ModSounds;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = IC.MODID)
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = IC.MODID)//TODO: advancements?
 public class RequestingHaloInterfaceHandler {
   private static final Minecraft mc = Minecraft.getInstance();
   private static RequestingHaloInterface haloInterface;
@@ -48,14 +43,19 @@ public class RequestingHaloInterfaceHandler {
   public static void openInterface(RequestingHaloInterface face) {
     haloInterface = face;
     setupKeyboardListener();
-    mc.player.playSound(ModSounds.holyCloak, SoundCategory.PLAYERS, 1F, 1F);
+    face.playSound(ModSounds.haloOpen, 1F);
+  }
+
+  public static boolean isInterfaceOpened() {
+    return haloInterface != null;
   }
 
   private static void setupKeyboardListener() {
     KeyBinding.unPressAllKeys();
     GLFW.glfwSetKeyCallback(mc.getMainWindow().getHandle(),
         (windowPointer, key, scanCode, action, modifiers) -> {
-          if (!shouldCancelKeyEvent(key, scanCode)) {
+          preKeyEvent(key, scanCode, action, modifiers);
+          if ((!shouldCancelKeyEvent(key, scanCode)) || mc.currentScreen != null) {
             mc.execute(() -> mc.keyboardListener.onKeyEvent(windowPointer, key, scanCode, action, modifiers));
           }
         });
@@ -135,6 +135,17 @@ public class RequestingHaloInterfaceHandler {
     }
   }
 
+  public static void handleRequestResultPacket(int requestId, int successAmount) {
+    if (getInterface() != null) {
+      getInterface().handleRequestResultPacket(requestId, successAmount);
+    }
+  }
+
+  @SubscribeEvent
+  public static void onLogOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+    haloInterface = null;
+  }
+
   @SubscribeEvent
   public static void onWorldRender(RenderWorldLastEvent event) {
     RequestingHaloInterface face = getInterface();
@@ -142,12 +153,12 @@ public class RequestingHaloInterfaceHandler {
       if (!slotStillValid()) {
         clearInterface();
       }
-      if (mc.currentScreen != null) {
-        Screen screen = mc.currentScreen;
-        if (!(screen instanceof ChatScreen)) {
-          closeInterface();
-        }
-      }
+//      if (mc.currentScreen != null) {
+//        Screen screen = mc.currentScreen;
+//        if (!(screen instanceof ChatScreen)) {
+//          closeInterface();
+//        }
+//      }
       if (!face.render(event.getMatrixStack(), event.getPartialTicks())) {
         clearInterface();
       }
@@ -157,7 +168,9 @@ public class RequestingHaloInterfaceHandler {
   @SubscribeEvent
   public static void onHudRender(RenderGameOverlayEvent.Post event) {
     if (getInterface() == null) return;
-    getInterface().renderHud(event.getMatrixStack(), event.getPartialTicks(), event.getWindow());
+    if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
+      getInterface().renderHud(event.getMatrixStack(), event.getPartialTicks(), event.getWindow());
+    }
   }
 
   @SubscribeEvent
@@ -172,7 +185,7 @@ public class RequestingHaloInterfaceHandler {
   @SubscribeEvent
   public static void onMouseInput(InputEvent.RawMouseEvent event) {
     if (getInterface() != null) {
-      if (!getInterface().isClosing()) {
+      if (!getInterface().isOpenClose()) {
         if (mc.currentScreen == null) {
           if (getInterface().onMouseInput(event.getButton(), event.getAction(), event.getMods())) {
             event.setCanceled(true);
@@ -185,7 +198,7 @@ public class RequestingHaloInterfaceHandler {
   @SubscribeEvent
   public static void onMouseScroll(InputEvent.MouseScrollEvent event) {
     if (getInterface() != null) {
-      if (!getInterface().isClosing()) {
+      if (!getInterface().isOpenClose()) {
         if (getInterface().onMouseScroll(event.getScrollDelta(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown())) {
           event.setCanceled(true);
         }
@@ -199,10 +212,25 @@ public class RequestingHaloInterfaceHandler {
     return getInterface().shouldCancelKeyEvent(key, scanCode);
   }
 
+  public static void preKeyEvent(int key, int scanCode, int action, int modifiers) {
+    if (getInterface() != null) {
+      getInterface().preKeyEvent(key, scanCode, action, modifiers);
+    }
+  }
+
   @SubscribeEvent
   public static void onKeyEvent(InputEvent.KeyInputEvent event) {
+//    if (event.getKey() == GLFW.GLFW_KEY_N && event.getAction() == GLFW.GLFW_PRESS) {
+//      try {
+//        WormholeRenderer.loadShader();
+//        WormholeRenderer.setShaderEnabled(!KeyboardHelper.hasShiftDown());
+//      } catch (IOException e) {
+//        e.printStackTrace();
+//      }
+//    }
+    if (mc.currentScreen != null) return;
     if (getInterface() != null) {
-      if (!getInterface().isClosing()) {
+      if (!getInterface().isOpenClose()) {
         getInterface().onKeyEvent(event.getKey(), event.getScanCode(), event.getAction(), event.getModifiers());
       }
     }
@@ -216,8 +244,10 @@ public class RequestingHaloInterfaceHandler {
   }
 
   public static void charCallback(int codePoint, int modifiers) {
-    if (getInterface() != null) {
-      getInterface().onCharEvent(codePoint, modifiers);
+    if (mc.currentScreen == null) {
+      if (getInterface() != null) {
+        getInterface().onCharEvent(codePoint, modifiers);
+      }
     }
   }
 }

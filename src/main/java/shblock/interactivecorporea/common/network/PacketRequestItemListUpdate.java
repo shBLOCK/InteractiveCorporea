@@ -35,7 +35,6 @@ public class PacketRequestItemListUpdate {
 
   public void handle(Supplier<NetworkEvent.Context> ctx) {
     ctx.get().enqueueWork(() -> {
-      //TODO: add checks to prevent lagging exploits
       ServerPlayerEntity player = ctx.get().getSender();
       if (player == null) return;
       ItemStack stack = slot.getStack(player);

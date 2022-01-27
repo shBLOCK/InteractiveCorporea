@@ -1,0 +1,58 @@
+{
+  "itemGroup.interactive_corporea": "Interactive Corporea",
+
+  "item.interactive_corporea.requesting_halo": "Corporea Requesting Halo",
+
+  "block.interactive_corporea.item_quantization_device": "Quantization Device",
+
+  "interactive_corporea.tooltip.shift_for_more": "§7Hold Shift for more information",
+  "interactive_corporea.requesting_halo.tooltip.null": "§4None",
+  "interactive_corporea.requesting_halo.tooltip.index_pos": "§3Bound Corporea Index Position: §2",
+  "interactive_corporea.requesting_halo.tooltip.sender_pos": "§3Bound Quantization Device Position: §2",
+  "interactive_corporea.requesting_halo.tooltip.modules_prefix": "§dModules: §r",
+
+  "interactive_corporea.halo_module.hud": "HUD",
+  "interactive_corporea.halo_module.receive": "Quantum Receiver",
+  "interactive_corporea.halo_module.search": "Search",
+  "interactive_corporea.halo_module.update": "Auto Update",
+  "interactive_corporea.halo_module.amount_sort": "Sorting",
+
+  "key.interactive_corporea.category": "Interactive Corporea",
+  "key.interactive_corporea.requesting_halo": "Open/Close Requesting Halo",
+  "key.interactive_corporea.requesting_halo.search": "Requesting Halo toggle search",
+  "key.interactive_corporea.requesting_halo.request_update": "Requesting Halo update item list",
+
+  "interactive_corporea.entry.requesting_halo": "Requesting Halo",
+  "interactive_corporea.page.requestingHalo.description": "You can use $(item)Requesting Halo/$ to view and request items from a corporea network more easily. Many $(thing)Modules/$ can also be added to provide more functions.",
+  "interactive_corporea.page.requestingHalo.example": "An example of the halo interface",
+  "interactive_corporea.page.requestingHalo.course.0.title": "Requesting Halo 101",
+  "interactive_corporea.page.requestingHalo.course.0": "To use the $(item)Requesting Halo/$, you have to $(thing)bind/$ it to your corporea network first. To bind it to a block, you simply use it on the target block while sneaking. You can see its binding position from the $(thing)tooltip/$.$(li)Binding to a $(l:ender/corporea_index)Corporea Index/$ allows the halo to communicate with it, and $(thing)display/$ the items in its network on the halo interface./$",
+  "interactive_corporea.page.requestingHalo.course.1": "$(li)Binding to a $(l:interactive_corporea:ender/quantization_device)Quantization Device/$ allows the device to \"teleport\" requested items to your position. (read more in $(l:interactive_corporea:ender/quantization_device#module_receiver)Receiver Module/$)/$<br>Only binding to the $(item)Corporea Index/$ does work, you just can't request items from the network.$(br2)After (at least) binding to the $(item)Corporea Index/$, you can open (and close) the halo interface by either use it in your hand or put it in your inventory (and your curio slots) and press the magic button \"$(thing)$(l)$(k:interactive_corporea.requesting_halo)/$\".",
+  "interactive_corporea.page.requestingHalo.course.2": "The displayed item list won't update automatically without the module installed, but you can still update it manually by pressing \"$(thing)$(l)$(k:interactive_corporea.requesting_halo.request_update)/$\".$(br2)While the interface is active, you can simply $(thing)turn your head left and right/$ to view all the items in your network. If there's too many items in your network, you can keep turning after a full turn, then you will see the $(thing)next \"page\"/$.",
+  "interactive_corporea.page.requestingHalo.course.3": "If you keep turning after the start or the end of the item list, you will feel a strong force that turns you in the opposite direction.$(br2)By default the items is displayed in 5 rows, but you can change it by scrolling while holding Ctrl.$(br2)$(l)IMPORTANT:/$ Maintaining the interface and updating the item list needs a little amount of mana. The interface will $(thing)close immediately/$ when mana runs out!",
+  "interactive_corporea.page.requestingHalo.module.receiver.title": "Quantum Receiver",
+  "interactive_corporea.page.requestingHalo.module.receiver": "This $(item)Luminizer/$ can link to the one in the $(l:interactive_corporea:ender/quantization_device)Quantization Device/$, allows the device to teleport quantized item particles to your position, and reconstruct them back to that item.$(br2)To request an item, you simply click on it on the interface. The way to request many items at ones is similar to the $(l:ender/corporea_crystal_cube)Corporea Crystal Cube/$.",
+  "interactive_corporea.page.requestingHalo.module.receiver_1": "Of course, this action consumes mana. But the whole action is all performed in the device, even the reconstruction of the item, so you only need to provide mana to the $(item)Quantization Device/$. The final mana consumption is depend on the sent item amount.",
+  "interactive_corporea.page.requestingHalo.module.search.title": "Search",
+  "interactive_corporea.page.requestingHalo.module.search": "This module allows you to filter the item list as you want.$(br2)After installing this module, you will see a $(thing)search bar/$ on top of the interface. Press the magic button \"$(thing)$(l)$(k:interactive_corporea.requesting_halo.search)/$\" to active/deactivate it.",
+  "interactive_corporea.page.requestingHalo.module.search_1": "This also supports some special prefixes.$(li)$(l)@/$: Mod Name$(li)$(l)#/$: Tooltip$(li)$(l)$/$: Tag$(li)$(l)%%/$: Creative Tab$(li)$(l)&/$: Resource Id",
+  "interactive_corporea.page.requestingHalo.module.hud.title": "HUD",
+  "interactive_corporea.page.requestingHalo.module.hud": "Adding the monocle allow you to see detail information about the selected item, to do that, you just hold \"Alt\".",
+  "interactive_corporea.page.requestingHalo.module.update.title": "Auto Update",
+  "interactive_corporea.page.requestingHalo.module.update": "This hourglass will trigger an update of the item list every 1 seconds, allows you to see the changes in your network immediately. Unfortunately, this consumes the same amount of mana as manually doing it.",
+  "interactive_corporea.page.requestingHalo.module.amount_sort.title": "Sorting",
+  "interactive_corporea.page.requestingHalo.module.amount_sort": "The master spark's ability of managing items helps sorting them, adding this to your Requesting Halo makes it display items in the order of amount.",
+
+  "interactive_corporea.entry.quantization_device": "Quantization Device",
+  "interactive_corporea.page.quantizationDevice.0": "Using the power of $(item)Luminizer/$, this device can break items down into \"$(thing)Quantum Particles/$\". These particles are so small and light that they can be teleported to anywhere in th world instantly, and be reconstructed into the original item.",
+  "interactive_corporea.page.quantizationDevice.1": "However, this process needs mana, but not a lot, and of course it depends on the processed item amount.$(br2)To give it mana, you can just send $(thing)Mana Bursts/$ into it. Process one item won't take much mana, so to avoid the waste of mana caused by over sending, you can read the amount of mana inside it with an $(item)Redstone Comparator/$, just like the $(item)Mana Pool/$.$(br2)Please read more about it in the $(l:interactive_corporea:ender/requesting_halo#module_receiver)Requesting Halo/$ chapter.",
+
+  "interactive_corporea.subtitle.halo.open": "Halo Interface: Open",
+  "interactive_corporea.subtitle.halo.close": "Halo Interface: Close",
+  "interactive_corporea.subtitle.halo.list_update": "Halo Interface: Update",
+  "interactive_corporea.subtitle.halo.select": "Halo Interface: Select",
+  "interactive_corporea.subtitle.halo.request": "Halo Interface: Request",
+  "interactive_corporea.subtitle.halo.reach_edge": "Halo Interface: Reach Edge",
+  "interactive_corporea.subtitle.quantum.send": "Quantize Send",
+  "interactive_corporea.subtitle.quantum.receive": "Quantize Receive"
+}

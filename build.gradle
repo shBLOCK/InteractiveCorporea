@@ -5,16 +5,18 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7.+'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: 'org.spongepowered.mixin'
 
 version = '1.0'
-group = 'com.yourname.modid' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'modid'
+group = 'shblock.interactivecorporea' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'interactive_corporea'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
 
@@ -139,6 +141,8 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.22'
 
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
     //compileOnly fg.deobf("vazkii.botania:Botania:1.16.5-${botania_version}:api")
     //runtimeOnly fg.deobf("vazkii.botania:Botania:1.16.5-${botania_version}")
     implementation fg.deobf("vazkii.botania:Botania:1.16.5-${botania_version}")
@@ -157,20 +161,30 @@ dependencies {
 
 }
 
-// Example for how to get properties into the manifest for reading by the runtime..
-jar {
-    manifest {
-        attributes([
-            "Specification-Title": "examplemod",
-            "Specification-Vendor": "examplemodsareus",
-            "Specification-Version": "1", // We are version 1 of ourselves
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"examplemodsareus",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
+mixin {
+    // MixinGradle Settings
+    add sourceSets.main, 'mixins.interactive_corporea.refmap.json'
+    config 'mixins.interactive_corporea.json'
+
+    debug.verbose = true
+    debug.export = true
+    dumpTargetOnFailure = true
 }
+
+// Example for how to get properties into the manifest for reading by the runtime..
+//jar {
+//    manifest {
+//        attributes([
+//            "Specification-Title": "examplemod",
+//            "Specification-Vendor": "examplemodsareus",
+//            "Specification-Version": "1", // We are version 1 of ourselves
+//            "Implementation-Title": project.name,
+//            "Implementation-Version": "${version}",
+//            "Implementation-Vendor" :"examplemodsareus",
+//            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+//        ])
+//    }
+//}
 
 // Example configuration to allow publishing using the maven-publish task
 // This is the preferred method to reobfuscate your jar file

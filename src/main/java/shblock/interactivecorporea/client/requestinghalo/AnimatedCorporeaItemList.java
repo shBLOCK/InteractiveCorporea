@@ -2,11 +2,15 @@ package shblock.interactivecorporea.client.requestinghalo;
 
 import net.minecraft.item.ItemStack;
 import org.lwjgl.system.CallbackI;
+import shblock.interactivecorporea.client.util.SearchHelper;
 import shblock.interactivecorporea.common.util.StackHelper;
 import shblock.interactivecorporea.common.util.Vec2i;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AnimatedCorporeaItemList {
   private static double animationLength = 10F;
@@ -16,11 +20,12 @@ public class AnimatedCorporeaItemList {
   private SortMode sortMode = SortMode.DICT;
   private List<ItemStack> stackList;
   private final List<AnimatedItemStack> animatedList = new ArrayList<>();
+  private final Map<Integer, AnimatedItemStack> requestIdMap = new HashMap<>();
 
   private boolean isFirstUpdate = true;
 
-  public AnimatedCorporeaItemList() {
-
+  public AnimatedCorporeaItemList(int height) {
+    this.height = height;
   }
 
   public void update(double dt) {
@@ -42,18 +47,28 @@ public class AnimatedCorporeaItemList {
     arrange();
   }
 
-  public List<ItemStack> filter(List<ItemStack> list) {
-    //TODO: searching
-    return new ArrayList<>(list);
+  public void setFilter(String filter) {
+    this.filter = filter;
   }
 
-  public void sort() {
+  private List<ItemStack> filter(List<ItemStack> list) {
+    String[] segments = filter.split(" ");
+
+    return list.stream().filter(
+        stack -> SearchHelper.matchItem(stack, segments)
+    ).collect(Collectors.toList());
+  }
+
+  private void sort() {
     animatedList.sort((a, b) -> {
-      if (a.isRemoved()) {
+      if (a.isRemoved() && !b.isRemoved()) {
         return 1;
       }
-      if (b.isRemoved()) {
+      if (b.isRemoved() && !a.isRemoved()) {
         return -1;
+      }
+      if (a.isRemoved() && b.isRemoved()) {
+        return 0;
       }
       return sortMode.getSorter().compare(a.getStack(), b.getStack());
     });
@@ -119,6 +134,23 @@ public class AnimatedCorporeaItemList {
   public void removeAll() {
     for (AnimatedItemStack stack : animatedList) {
       stack.remove();
+    }
+  }
+
+  private int nextRequestId = 0;
+
+  public int onRequest(AnimatedItemStack aniStack) {
+    int id = nextRequestId;
+    requestIdMap.put(id, aniStack);
+    nextRequestId++;
+
+    return id;
+  }
+
+  public void handleRequestResultPacket(int requestId, int successAmount) {
+    AnimatedItemStack aniStack = requestIdMap.get(requestId);
+    if (aniStack != null && !aniStack.isRemoved()) {
+      aniStack.handleRequestResult(successAmount);
     }
   }
 

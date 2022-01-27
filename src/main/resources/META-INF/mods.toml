@@ -4,22 +4,32 @@ license="MIT"
 
 [[mods]]
 modId="interactive_corporea"
-version="${file.jarVersion}"
+version="1.0"
 displayName="Interactive Corporea"
-logoFile="interactive_corporea.png"
+logoFile="icon.png"
 authors="shBLOCK"
 description='''
-A addon-mod for Botania to make the Corporea system easier to use.
+An add-on mod for Botania to make the Corporea system easier to use.
 '''
-[[dependencies.examplemod]]
+
+itemIcon="interactive_corporea:requesting_halo" # custom icon for Catalogue's mod list
+configBackground="botania:textures/block/corporea_block.png" # background for Configured's generated config screen
+
+[[dependencies.interactive_corporea]]
     modId="forge"
     mandatory=true
     versionRange="[36,)"
     ordering="NONE"
     side="BOTH"
-[[dependencies.examplemod]]
+[[dependencies.interactive_corporea]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.16.5,1.17)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.interactive_corporea]]
+    modId="botania"
+    mandatory=true
+    versionRange="[1.16.5-420.1,)"
     ordering="NONE"
     side="BOTH"

@@ -10,8 +10,10 @@ import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -42,14 +44,20 @@ public class ColoredItemParticleHelper {
   }
 
   public static int getRandomColor(TextureAtlasSprite[] sprites, int renderColor) {
-    TextureAtlasSprite sprite = sprites[RAND.nextInt(sprites.length)];
-    while (true) {
-      int color = sprite.getPixelRGBA(
+    TextureAtlasSprite sprite;
+    if (sprites.length != 0) {
+      sprite = sprites[RAND.nextInt(sprites.length)];
+    } else {
+      sprite = mc.getModelManager().getMissingModel().getParticleTexture(EmptyModelData.INSTANCE);
+    }
+    int color = 0x000000FF;
+    for (int i = 0; i < 256; i++) {
+      color = sprite.getPixelRGBA(
           RAND.nextInt(sprite.getFrameCount()),
           RAND.nextInt(sprite.getWidth()),
           RAND.nextInt(sprite.getHeight())
       );
-      if (NativeImage.getAlpha(color) > 128) {
+      if (NativeImage.getAlpha(color) > 64) {
         int red = (int) ((color & 255 - 1) * (double) (renderColor >> 16 & 255) / 255.0F);
         int green = (int) ((color >> 8 & 255 - 1) * (double) (renderColor >> 8 & 255) / 255.0F);
         int blue = (int) ((color >> 16 & 255 - 1) * (double) (renderColor & 255) / 255.0F);
@@ -62,6 +70,7 @@ public class ColoredItemParticleHelper {
             (red & 0xFF);
       }
     }
+    return color | (0xFF << 24);
   }
 
   public static int getRandomColor(ItemStack stack) {

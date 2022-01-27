@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FIF",
+    "RLR",
+    "ARA"
+  ],
+  "key": {
+    "R": { "item": "botania:bifrost_pane" },
+    "F": { "item": "botania:corporea_funnel" },
+    "L": { "item": "botania:light_relay" },
+    "I": { "item": "botania:corporea_index" },
+    "A": { "item": "botania:light_launcher" }
+  },
+  "result": {
+    "item": "interactive_corporea:item_quantization_device",
+    "count": 1
+  }
+}
