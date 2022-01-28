@@ -309,6 +309,7 @@ public class RequestingHaloInterface {
 
   private boolean lastLimitRotation = false;
   private void limitPlayerRotation() {
+    if (isOpenClose()) return;
     if (itemList.getAnimatedList().size() == 0) return;
 
     double excessSpacing = 3;
@@ -335,7 +336,7 @@ public class RequestingHaloInterface {
     }
 
     if (limited && !lastLimitRotation) {
-      playSound(ModSounds.haloReachEdge, 1F);
+//      playSound(ModSounds.haloReachEdge, 1F); //TODO: add this back when finds a better sound effect
     }
 
     lastLimitRotation = limited;

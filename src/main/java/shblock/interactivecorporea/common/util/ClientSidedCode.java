@@ -37,7 +37,7 @@ public class ClientSidedCode {
       QuantizationParticleData data;
       switch (type) {
         case PacketPlayQuantizationEffect.QUANTIZATION:
-          mc.world.playSound(pos.x, pos.y, pos.z, ModSounds.quantumSend, SoundCategory.PLAYERS, .3F, 1F, false);
+          mc.world.playSound(pos.x, pos.y, pos.z, ModSounds.quantumSend, SoundCategory.PLAYERS, .8F, 1F, false);
           for (int i = 0; i < 512; i++) {
             double particleDist = 2;
             Vector3 dest = new Vector3(
@@ -51,7 +51,7 @@ public class ClientSidedCode {
           }
           break;
         case PacketPlayQuantizationEffect.CONSTRUCTION:
-          mc.world.playSound(pos.x, pos.y, pos.z, ModSounds.quantumReceive, SoundCategory.PLAYERS, .3F, 1F, false);
+          mc.world.playSound(pos.x, pos.y, pos.z, ModSounds.quantumReceive, SoundCategory.PLAYERS, .8F, 1F, false);
           Vector3 rotBase = normal.perpendicular().normalize().multiply(.5);
           for (int i = 0; i < 128; i++) {
             Vector3 roted = rotBase.rotate(PacketPlayQuantizationEffect.RAND.nextDouble() * Math.PI * 2, normal);
