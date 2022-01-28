@@ -17,6 +17,7 @@ Known Issues
 Future Plans
 ==================
 - A wormhole system that allows teleporting items thrown towards the halo interface to your base (wormhole render is shader-based, and has a warp effect around it)
+- Manuel crafting on the halo
 - Auto crafting system
 
 Modpack Policy
