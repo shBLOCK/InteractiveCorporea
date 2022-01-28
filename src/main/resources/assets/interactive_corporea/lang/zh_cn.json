@@ -23,7 +23,7 @@
   "key.interactive_corporea.requesting_halo.request_update": "多媒体请求环 更新物品列表",
 
   "interactive_corporea.entry.requesting_halo": "多媒体请求环",
-  "interactive_corporea.page.requestingHalo.description": "你可以用$(item)多媒体请求环/$来更方便地浏览和请求一个多媒体网络中的物品. 也有很多可以安装的$(thing)模块/$来提供更多功能.",
+  "interactive_corporea.page.requestingHalo.description": "你可以用$(item)多媒体请求环/$来更方便地浏览和请求一个多媒体网络中的物品. 也有很多可以安装的$(thing)模块/$来提供更多功能.<br>要添加模块,你只需把请求环与对应的物品合成即可(对应的物品在后面章节中)",
   "interactive_corporea.page.requestingHalo.example": "一个多媒体请求环界面",
   "interactive_corporea.page.requestingHalo.course.0.title": "使用方法",
   "interactive_corporea.page.requestingHalo.course.0": "要使用$(item)多媒体请求环/$,你首先五幺把它$(thing)绑定/$到一个多媒体网络. 要绑定到一个方块,只需潜行将它对着目标方块使用. 你可以从$(thing)Tooltip/$中看到当前绑定的位置.$(li)绑定到一个$(l:ender/corporea_index)多媒体索引/$使请求环可以和它交流信息,然后将得到的物品列表$(thing)显示/$在界面上./$",

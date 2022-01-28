@@ -23,7 +23,7 @@
   "key.interactive_corporea.requesting_halo.request_update": "Requesting Halo update item list",
 
   "interactive_corporea.entry.requesting_halo": "Requesting Halo",
-  "interactive_corporea.page.requestingHalo.description": "You can use $(item)Requesting Halo/$ to view and request items from a corporea network more easily. Many $(thing)Modules/$ can also be added to provide more functions.",
+  "interactive_corporea.page.requestingHalo.description": "You can use $(item)Requesting Halo/$ to view and request items from a corporea network more easily. Many $(thing)Modules/$ can also be added to provide more functions.<br>To add modules, you just craft the halo with the specific item shown in the later chapters.",
   "interactive_corporea.page.requestingHalo.example": "An example of the halo interface",
   "interactive_corporea.page.requestingHalo.course.0.title": "Requesting Halo 101",
   "interactive_corporea.page.requestingHalo.course.0": "To use the $(item)Requesting Halo/$, you have to $(thing)bind/$ it to your corporea network first. To bind it to a block, you simply use it on the target block while sneaking. You can see its binding position from the $(thing)tooltip/$.$(li)Binding to a $(l:ender/corporea_index)Corporea Index/$ allows the halo to communicate with it, and $(thing)display/$ the items in its network on the halo interface./$",
