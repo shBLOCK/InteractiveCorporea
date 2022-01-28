@@ -160,7 +160,7 @@ public class TileItemQuantizationDevice extends TileCorporeaBase implements ITic
     private final Vector3 fromPos;
     private final Vector3 pos;
     private final Vector3 normal;
-    private int time = 30;
+    private int time = ModConfig.COMMON.quantizationAnimationSpeed.get() * 3;
 
     public Sender(ItemStack stack, World world, Vector3 fromPos, Vector3 pos, Vector3 normal) {
       this.stack = stack.copy();
@@ -174,12 +174,12 @@ public class TileItemQuantizationDevice extends TileCorporeaBase implements ITic
      * @return if this sender should be removed (item entity has been summoned)
      */
     public boolean tick() {
-      time--;
+      int spd = ModConfig.COMMON.quantizationAnimationSpeed.get();
       if (!world.isRemote) {
-        if (time == 29) { // first tick
-          ModPacketHandler.sendToPlayersInWorld((ServerWorld) world, new PacketPlayQuantizationEffect(stack, 20, fromPos));
-        } else if (time == 19) {
-          ModPacketHandler.sendToPlayersInWorld((ServerWorld) world, new PacketPlayQuantizationEffect(stack, 20, pos, normal));
+        if (time == spd * 3) { // first tick
+          ModPacketHandler.sendToPlayersInWorld((ServerWorld) world, new PacketPlayQuantizationEffect(stack, spd * 2, fromPos));
+        } else if (time == spd * 2) {
+          ModPacketHandler.sendToPlayersInWorld((ServerWorld) world, new PacketPlayQuantizationEffect(stack, spd * 2, pos, normal));
         } else if (time == 0) {
           while (stack.getCount() > 0) {
             int cnt = Math.min(stack.getCount(), stack.getMaxStackSize());
@@ -191,6 +191,7 @@ public class TileItemQuantizationDevice extends TileCorporeaBase implements ITic
             world.addEntity(entity);
           }
         }
+        time--;
       }
       return time < 0;
     }

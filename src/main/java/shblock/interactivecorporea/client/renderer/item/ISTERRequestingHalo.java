@@ -17,6 +17,7 @@ import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.client.model.data.EmptyModelData;
+import shblock.interactivecorporea.ModConfig;
 import shblock.interactivecorporea.client.render.RenderUtil;
 import shblock.interactivecorporea.common.util.Perlin;
 import vazkii.botania.client.core.handler.ClientTickHandler;
@@ -26,7 +27,6 @@ import vazkii.botania.client.render.tile.RenderTileCorporeaIndex;
 public class ISTERRequestingHalo extends ItemStackTileEntityRenderer {
   private static final Minecraft mc = Minecraft.getInstance();
   private static RenderTileCorporeaIndex corporeaIndexRenderer;
-  private static final Perlin rotPerlin = new Perlin();
 
   @Override
   public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack ms, IRenderTypeBuffer buffers, int combinedLight, int combinedOverlay) {
@@ -78,10 +78,12 @@ public class ISTERRequestingHalo extends ItemStackTileEntityRenderer {
 
       ms.translate(.5, .5, .5);
       double r = ClientTickHandler.total * .1;
+      if (ModConfig.CLIENT.itemRequestingHaloAnimation.get())
+        r = .2;
       ms.rotate(new Quaternion(
-          (float) ((i + Math.sin(ClientTickHandler.total / 10) / 5) * Math.PI * 4),
+          (float) ((i + Math.sin(r) / 5) * Math.PI * 4),
           (float) r,
-          (float) (Math.PI * Math.sin(ClientTickHandler.total / 10) * .25),
+          (float) (Math.PI * Math.sin(r) * .25),
           false
       ));
       ms.translate(-.5, -.5, -.5);
