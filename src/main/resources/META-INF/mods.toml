@@ -4,7 +4,7 @@ license="MIT"
 
 [[mods]]
 modId="interactive_corporea"
-version="1.0"
+version="1.2"
 displayName="Interactive Corporea"
 logoFile="icon.png"
 authors="shBLOCK"
