@@ -59,7 +59,7 @@ public class PacketRequestItem {
       if (!(te instanceof TileItemQuantizationDevice)) return;
       TileItemQuantizationDevice qd = (TileItemQuantizationDevice) te;
       ItemStack reqStack = stack.copy();
-      int successAmount = qd.requestItem(reqStack, requestPos, normal, player);
+      int successAmount = qd.requestItem(reqStack, requestPos, normal, player, halo);
 
       ModPacketHandler.sendToPlayer(player, new PacketRequestResult(requestId, successAmount));
     });

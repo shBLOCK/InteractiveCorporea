@@ -1,6 +1,7 @@
 package shblock.interactivecorporea.common.tile;
 
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -12,8 +13,11 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 import shblock.interactivecorporea.ModConfig;
 import shblock.interactivecorporea.common.corporea.CorporeaUtil;
+import shblock.interactivecorporea.common.item.HaloModule;
+import shblock.interactivecorporea.common.item.ItemRequestingHalo;
 import shblock.interactivecorporea.common.network.ModPacketHandler;
 import shblock.interactivecorporea.common.network.PacketPlayQuantizationEffect;
+import shblock.interactivecorporea.common.requestinghalo.HaloServerHandler;
 import shblock.interactivecorporea.common.util.NBTTagHelper;
 import shblock.interactivecorporea.common.util.StackHelper;
 import vazkii.botania.api.corporea.ICorporeaResult;
@@ -25,6 +29,7 @@ import vazkii.botania.common.block.tile.mana.TilePool;
 import vazkii.botania.common.core.helper.Vector3;
 import vazkii.botania.common.impl.corporea.CorporeaItemStackMatcher;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -42,7 +47,7 @@ public class TileItemQuantizationDevice extends TileCorporeaBase implements ITic
     return itemAmount * ModConfig.COMMON.quantizationConsumption.get();
   }
 
-  public int requestItem(ItemStack stack, Vector3 requestPos, Vector3 normal, ServerPlayerEntity player) {
+  public int requestItem(ItemStack stack, Vector3 requestPos, Vector3 normal, ServerPlayerEntity player, ItemStack halo) {
     if (world == null) return 0;
     if (getManaCost(stack.getCount()) > mana) return 0;
     ICorporeaResult result = CorporeaUtil.requestItemNoIntercept(new CorporeaItemStackMatcher(stack, true), stack.getCount(), getSpark(), true);
@@ -57,7 +62,7 @@ public class TileItemQuantizationDevice extends TileCorporeaBase implements ITic
       }
     }
     Vector3 fromPos = new Vector3(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
-    senders.add(new Sender(resultStack, world, fromPos, requestPos, normal));
+    senders.add(new Sender(resultStack, world, fromPos, requestPos, normal, player, ItemRequestingHalo.isModuleInstalled(halo, HaloModule.MAGNATE)));
     markDirty();
     VanillaPacketDispatcher.dispatchTEToNearbyPlayers(this);
     consumeMana(getManaCost(resultStack.getCount()));
@@ -161,13 +166,17 @@ public class TileItemQuantizationDevice extends TileCorporeaBase implements ITic
     private final Vector3 pos;
     private final Vector3 normal;
     private int time = ModConfig.COMMON.quantizationAnimationSpeed.get() * 3;
+    private final PlayerEntity player;
+    private final boolean shouldAttract;
 
-    public Sender(ItemStack stack, World world, Vector3 fromPos, Vector3 pos, Vector3 normal) {
+    public Sender(ItemStack stack, World world, Vector3 fromPos, Vector3 pos, Vector3 normal, @Nullable PlayerEntity player, boolean shouldAttract) {
       this.stack = stack.copy();
       this.world = world;
       this.fromPos = fromPos;
       this.pos = pos;
       this.normal = normal;
+      this.player = player;
+      this.shouldAttract = shouldAttract;
     }
 
     /**
@@ -189,6 +198,10 @@ public class TileItemQuantizationDevice extends TileCorporeaBase implements ITic
             ItemEntity entity = new ItemEntity(world, pos.x, pos.y, pos.z, spawnStack);
             entity.setMotion(0, 0, 0);
             world.addEntity(entity);
+
+            if (shouldAttract && (player != null)) {
+              HaloServerHandler.addAttractItem(player, entity);
+            }
           }
         }
         time--;
@@ -202,7 +215,9 @@ public class TileItemQuantizationDevice extends TileCorporeaBase implements ITic
           NBTTagHelper.getWorld(nbt, "world"),
           NBTTagHelper.getVector3(nbt.getCompound("fromPos")),
           NBTTagHelper.getVector3(nbt.getCompound("pos")),
-          NBTTagHelper.getVector3(nbt.getCompound("normal"))
+          NBTTagHelper.getVector3(nbt.getCompound("normal")),
+          null, // Store this is unnecessary
+          false // Store this is unnecessary
       );
       s.time = nbt.getInt("time");
       return s;
