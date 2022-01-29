@@ -1,7 +1,6 @@
 package shblock.interactivecorporea.client.requestinghalo;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.MainWindow;
@@ -161,6 +160,8 @@ public class AnimatedItemStack {
     ms.translate(-w, 0, 0);
 
     Matrix4f mat = ms.getLast().getMatrix();
+
+    RenderSystem.enableDepthTest();
 
     int shadeColor = (color & 16579836) >> 2 | color & -16777216;
     font.renderString(text, 1, 1, shadeColor, false, mat, buffers, true, 0, 0xF000F0);
