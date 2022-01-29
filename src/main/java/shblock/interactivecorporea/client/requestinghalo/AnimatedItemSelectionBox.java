@@ -28,7 +28,6 @@ public class AnimatedItemSelectionBox {
       16, false, false,
       RenderType.State.getBuilder()
           .transparency(AccessorRenderState.getTranslucentTransparency())
-          .depthTest(new RenderState.DepthTestState("always", GL11.GL_ALWAYS))
           .texture(new RenderState.TextureState(ICON, false, false))
           .build(false)
   );
@@ -92,6 +91,7 @@ public class AnimatedItemSelectionBox {
 
   public void render(MatrixStack ms) {
     ms.push();
+    ms.translate(0, 0, -.1);
     IRenderTypeBuffer.Impl buffers = mc.getRenderTypeBuffers().getBufferSource();
     IVertexBuilder buffer = buffers.getBuffer(RENDER_TYPE);
     Color color = Color.getHSBColor(ClientTickHandler.total  / 200F,1F, 1F);
