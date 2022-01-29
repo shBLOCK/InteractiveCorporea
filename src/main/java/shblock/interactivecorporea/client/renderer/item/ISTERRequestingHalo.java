@@ -53,11 +53,13 @@ public class ISTERRequestingHalo extends ItemStackTileEntityRenderer {
     corporeaIndexRenderer.render(null, pt, ms, buffers, combinedLight, combinedOverlay);
     ms.pop();
 
-    ms.push();
-    ms.translate(.5, .5, .5);
-    int color = MathHelper.hsvToRGB((ClientTickHandler.total / 200F) % 1F, 1F, 1F) | 150 << 24;
-    RenderUtil.renderPerlinStar(ms, buffers, color, .1F, .1F, .1F, 0);
-    ms.pop();
+    if (ModConfig.CLIENT.itemRequestingHaloAnimation.get()) {
+      ms.push();
+      ms.translate(.5, .5, .5);
+      int color = MathHelper.hsvToRGB((ClientTickHandler.total / 200F) % 1F, 1F, 1F) | 150 << 24;
+      RenderUtil.renderPerlinStar(ms, buffers, color, .1F, .1F, .1F, 0);
+      ms.pop();
+    }
 
     BlockRendererDispatcher blockRenderer = mc.getBlockRendererDispatcher();
     BlockModelRenderer blockModelRenderer = blockRenderer.getBlockModelRenderer();
@@ -78,7 +80,7 @@ public class ISTERRequestingHalo extends ItemStackTileEntityRenderer {
 
       ms.translate(.5, .5, .5);
       double r = ClientTickHandler.total * .1;
-      if (ModConfig.CLIENT.itemRequestingHaloAnimation.get())
+      if (!ModConfig.CLIENT.itemRequestingHaloAnimation.get())
         r = .2;
       ms.rotate(new Quaternion(
           (float) ((i + Math.sin(r) / 5) * Math.PI * 4),
