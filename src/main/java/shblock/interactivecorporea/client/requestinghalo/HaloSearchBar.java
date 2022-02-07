@@ -1,11 +1,12 @@
 package shblock.interactivecorporea.client.requestinghalo;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.fonts.TextInputUtil;
 import net.minecraft.util.math.MathHelper;
 import shblock.interactivecorporea.client.render.RenderUtil;
-import shblock.interactivecorporea.client.util.MathUtil;
+import shblock.interactivecorporea.common.util.MathUtil;
 import vazkii.botania.client.core.handler.ClientTickHandler;
 
 public class HaloSearchBar {
@@ -75,7 +76,7 @@ public class HaloSearchBar {
   public void backspace() {
     if (!isSearching()) return;
 
-    if (selectionEnd <= searchString.length() && !searchString.isEmpty()) {
+    if (selectionEnd <= searchString.length() && !searchString.isEmpty() && selectionEnd != 0) {
       if (selectionStart == selectionEnd) {
         searchString = searchString.substring(0, selectionEnd - 1) + searchString.substring(selectionEnd);
         selectionEnd--;
