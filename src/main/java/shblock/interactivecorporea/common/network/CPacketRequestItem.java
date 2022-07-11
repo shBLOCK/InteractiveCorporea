@@ -7,25 +7,23 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
-import shblock.interactivecorporea.ModConfig;
 import shblock.interactivecorporea.common.item.ItemRequestingHalo;
 import shblock.interactivecorporea.common.tile.TileItemQuantizationDevice;
 import shblock.interactivecorporea.common.util.CISlotPointer;
 import shblock.interactivecorporea.common.util.NetworkHelper;
 import shblock.interactivecorporea.common.util.WorldHelper;
-import vazkii.botania.api.mana.ManaItemHandler;
 import vazkii.botania.common.core.helper.Vector3;
 
 import java.util.function.Supplier;
 
-public class PacketRequestItem {
+public class CPacketRequestItem {
   private final CISlotPointer slot;
   private final ItemStack stack;
   private final Vector3 requestPos;
   private final Vector3 normal;
   private final int requestId; // only use by the client to identify the request in the PacketRequestResult
 
-  public PacketRequestItem(CISlotPointer slot, ItemStack stack, Vector3 requestPos, Vector3 normal, int requestId) {
+  public CPacketRequestItem(CISlotPointer slot, ItemStack stack, Vector3 requestPos, Vector3 normal, int requestId) {
     this.slot = slot;
     this.stack = stack;
     this.requestPos = requestPos;
@@ -33,8 +31,8 @@ public class PacketRequestItem {
     this.requestId = requestId;
   }
 
-  public static PacketRequestItem decode(PacketBuffer buf) {
-    return new PacketRequestItem(NetworkHelper.readCISlotPointer(buf), NetworkHelper.readBigStack(buf), NetworkHelper.readVector3(buf), NetworkHelper.readVector3(buf), buf.readInt());
+  public static CPacketRequestItem decode(PacketBuffer buf) {
+    return new CPacketRequestItem(NetworkHelper.readCISlotPointer(buf), NetworkHelper.readBigStack(buf), NetworkHelper.readVector3(buf), NetworkHelper.readVector3(buf), buf.readInt());
   }
 
   public void encode(PacketBuffer buf) {
@@ -61,7 +59,7 @@ public class PacketRequestItem {
       ItemStack reqStack = stack.copy();
       int successAmount = qd.requestItem(reqStack, requestPos, normal, player, halo);
 
-      ModPacketHandler.sendToPlayer(player, new PacketRequestResult(requestId, successAmount));
+      ModPacketHandler.sendToPlayer(player, new SPacketRequestResult(requestId, successAmount));
     });
   }
 }

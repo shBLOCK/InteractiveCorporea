@@ -4,7 +4,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
 import shblock.interactivecorporea.IC;
 import shblock.interactivecorporea.common.corporea.CorporeaUtil;
@@ -18,15 +17,15 @@ import vazkii.botania.api.corporea.ICorporeaSpark;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class PacketRequestItemListUpdate {
+public class CPacketRequestItemListUpdate {
   private final CISlotPointer slot;
 
-  public PacketRequestItemListUpdate(CISlotPointer slot) {
+  public CPacketRequestItemListUpdate(CISlotPointer slot) {
     this.slot = slot;
   }
 
-  public static PacketRequestItemListUpdate decode(PacketBuffer buf) {
-    return new PacketRequestItemListUpdate(NetworkHelper.readCISlotPointer(buf));
+  public static CPacketRequestItemListUpdate decode(PacketBuffer buf) {
+    return new CPacketRequestItemListUpdate(NetworkHelper.readCISlotPointer(buf));
   }
 
   public void encode(PacketBuffer buf) {
@@ -44,7 +43,7 @@ public class PacketRequestItemListUpdate {
       ICorporeaSpark spark = CorporeaHelper.instance().getSparkForBlock(WorldHelper.getWorldFromName(pos.getDimension()), pos.getPos());
       if (spark == null) return;
       List<ItemStack> result = CorporeaUtil.getAllItemsCompacted(spark);
-      ModPacketHandler.sendToPlayer(player, new PacketUpdateItemList(result));
+      ModPacketHandler.sendToPlayer(player, new SPacketUpdateItemList(result));
       IC.debug("Update item list packet sent to player: " + player.getGameProfile().getName());
     });
     ctx.get().setPacketHandled(true);

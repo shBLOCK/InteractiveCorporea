@@ -16,6 +16,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import shblock.interactivecorporea.IC;
 import shblock.interactivecorporea.client.render.RenderUtil;
+import shblock.interactivecorporea.client.util.RenderTick;
 import shblock.interactivecorporea.common.util.Vec2d;
 import vazkii.botania.client.core.handler.ClientTickHandler;
 import vazkii.botania.common.core.helper.Vector3;
@@ -24,7 +25,7 @@ import java.io.IOException;
 
 import static org.lwjgl.opengl.GL44.*;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = IC.MODID)
+//@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = IC.MODID)
 public class WormholeRenderer {
   private static final Minecraft mc = Minecraft.getInstance();
 
@@ -45,6 +46,7 @@ public class WormholeRenderer {
   );
 
   private static boolean didCopyDepth;
+//TODO: use our shader class here
 
 //  private static int postVertShader;
   private static int postFragShader;
@@ -128,7 +130,7 @@ public class WormholeRenderer {
         .5F
     );
 
-//    hole.radius = (Math.sin(ClientTickHandler.total * .25) + 1) + .25;
+//    hole.radius = (Math.sin(RenderTick.total * .25) + 1) + .25;
     hole.radius = 1;
     Vector3 localPos = RenderUtil.worldPosToLocalPos(hole.pos);
     Vec2d midTexCoord = RenderUtil.texCoordFromNDC(RenderUtil.calcNDC(hole.pos));
@@ -190,7 +192,7 @@ public class WormholeRenderer {
     RenderSystem.glUniform1i(Uniforms.DATA, 31);
 
     glUniform2f(Uniforms.SCREEN_SIZE, width, height);
-    glUniform1f(Uniforms.TIME, ClientTickHandler.total);
+    glUniform1f(Uniforms.TIME, (float) RenderTick.total);
 
     applyShaderProjectionData();
 
@@ -233,7 +235,7 @@ public class WormholeRenderer {
   private static void applyShaderProjectionData() {
     ActiveRenderInfo info = mc.gameRenderer.getActiveRenderInfo();
     double aspectRatio = (double) mc.getMainWindow().getFramebufferWidth() / (double) mc.getMainWindow().getFramebufferHeight();
-    double fov = mc.gameRenderer.getFOVModifier(info, ClientTickHandler.partialTicks, true);
+    double fov = mc.gameRenderer.getFOVModifier(info, (float) RenderTick.pt, true);
     fov = Math.toRadians(fov) / 2;
     Vector3d dir = Vector3d.fromPitchYaw(
         info.getPitch() * .9999F,
@@ -260,19 +262,19 @@ public class WormholeRenderer {
   }
 
   private static class Uniforms {
-    public static int MAIN_SAMPLER;
-    public static int MAIN_DEPTH_SAMPLER;
-    public static int DATA;
+    private static int MAIN_SAMPLER;
+    private static int MAIN_DEPTH_SAMPLER;
+    private static int DATA;
 
-    public static int SCREEN_SIZE;
-    public static int TIME;
+    private static int SCREEN_SIZE;
+    private static int TIME;
 
-    public static int ASPECT_RATIO;
-    public static int MID_DIRECTION;
-    public static int FOV;
-    public static int PERPENDICULAR_X;
-    public static int PERPENDICULAR_Y;
-    public static int FAR_PLANE;
+    private static int ASPECT_RATIO;
+    private static int MID_DIRECTION;
+    private static int FOV;
+    private static int PERPENDICULAR_X;
+    private static int PERPENDICULAR_Y;
+    private static int FAR_PLANE;
 
     private static void initUniformLocations(int program) {
       MAIN_SAMPLER = glGetUniformLocation(program, "mainSampler");

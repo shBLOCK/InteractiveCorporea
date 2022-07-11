@@ -7,10 +7,6 @@ import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
@@ -19,8 +15,9 @@ import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.client.gui.GuiUtils;
-import org.lwjgl.opengl.GL11;
+import shblock.interactivecorporea.client.render.RenderUtil;
 import shblock.interactivecorporea.client.util.KeyboardHelper;
+import shblock.interactivecorporea.client.util.RenderTick;
 import shblock.interactivecorporea.common.util.*;
 import vazkii.botania.client.core.handler.ClientTickHandler;
 
@@ -62,7 +59,7 @@ public class AnimatedItemStack {
     pos.add(moveSpd.copy().mul(dt));
 
     if (removed) {
-      fade -= (Math.sin(fade * Math.PI / 2) + 1) * dt * .2;
+      fade -= (Math.sin(fade * Math.PI / 2) + 1) * dt * .1;
       if (fade < 0)
         fade = 0;
     } else {
@@ -91,26 +88,20 @@ public class AnimatedItemStack {
   }
 
   private double calcSpeed(double current, double dest, double prevSpd) {
-    if (Math.abs(dest - current) < .01) return dest - current;
-    return Math.signum(dest - current) * Math.min(
-        Math.abs(dest - current) * .5 + .01,
-        Math.abs(prevSpd) + .05
-    );
+    return MathUtil.smoothMovingSpeed(current, dest, prevSpd, .05, .5, .01);
   }
 
-  private void setupForFadeAnimation(MatrixStack ms) {
-    float s = (float) fade;
-    ms.scale(s, s, s);
-  }
-
-  public void renderItem(MatrixStack ms, IRenderTypeBuffer.Impl buffers) {
+  public void renderItem(MatrixStack ms) {
     ms.push();
+    ms.rotate(Vector3f.YP.rotationDegrees(180));
 
-    setupForFadeAnimation(ms);
-
-    RenderHelper.setupDiffuseGuiLighting(ms.getLast().getMatrix());
-    IBakedModel ibakedmodel = mc.getItemRenderer().getItemModelWithOverrides(stack, mc.world, mc.player);
-    mc.getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GUI, false, ms, buffers, 0xF000F0, OverlayTexture.NO_OVERLAY, ibakedmodel);
+    if (!removed) {
+      float s = (float) fade;
+      ms.scale(s, s, s);
+      RenderUtil.renderFlatItem(ms, stack);
+    } else {
+      RenderUtil.applyStippling(fade, () -> RenderUtil.renderFlatItem(ms, stack));
+    }
 
     ms.pop();
   }
@@ -118,7 +109,8 @@ public class AnimatedItemStack {
   @SuppressWarnings("DuplicatedCode")
   public void renderAmount(MatrixStack ms, int color, IRenderTypeBuffer.Impl buffers) {
     ms.push();
-    setupForFadeAnimation(ms);
+    float scale = (float) fade;
+    ms.scale(scale, scale, scale);
 
     int orgAlpha = color >>> 24;
     int colorNoAlpha = color & 0x00FFFFFF;
@@ -200,11 +192,11 @@ public class AnimatedItemStack {
       }
       int width = window.getScaledWidth();
       int height = window.getScaledHeight();
-      int bgCol = MathHelper.hsvToRGB(ClientTickHandler.total % 200F / 200F, 1F, 1F);
+      int bgCol = MathHelper.hsvToRGB((float) (RenderTick.total % 200F / 200F), 1F, 1F);
       bgCol |= 150 << 24;
 //      bgCol |= 16 << 24;
-      int borderColStart = MathHelper.hsvToRGB((ClientTickHandler.total + 66.66F) % 200F / 200F, 1F, 1F) | 0xFF000000;
-      int borderColEnd = MathHelper.hsvToRGB((ClientTickHandler.total + 133.33F) % 200F / 200F, 1F, 1F) | 0xFF000000;
+      int borderColStart = MathHelper.hsvToRGB((float) ((RenderTick.total + 66.66F) % 200F / 200F), 1F, 1F) | 0xFF000000;
+      int borderColEnd = MathHelper.hsvToRGB((float) ((RenderTick.total + 133.33F) % 200F / 200F), 1F, 1F) | 0xFF000000;
       GuiUtils.drawHoveringText(
           stack,
           ms,
@@ -297,7 +289,7 @@ class RequestResultAnimation {
   }
 
   public boolean render(MatrixStack ms, IRenderTypeBuffer.Impl buffers) {
-    progress += (ClientTickHandler.delta * .05);
+    progress += (RenderTick.delta * .05);
     if (progress >= 1) return true;
 
     ms.push();

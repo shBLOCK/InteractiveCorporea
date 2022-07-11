@@ -1,5 +1,6 @@
 package shblock.interactivecorporea.common.item;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
@@ -9,6 +10,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
@@ -17,6 +20,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.DistExecutor;
 import shblock.interactivecorporea.IC;
 import shblock.interactivecorporea.client.renderer.item.ISTERRequestingHalo;
@@ -26,6 +30,7 @@ import shblock.interactivecorporea.client.util.KeyboardHelper;
 import shblock.interactivecorporea.common.block.BlockItemQuantizationDevice;
 import shblock.interactivecorporea.common.util.CISlotPointer;
 import shblock.interactivecorporea.common.util.NBTTagHelper;
+import shblock.interactivecorporea.common.util.StackHelper;
 import vazkii.botania.api.mana.IManaUsingItem;
 import vazkii.botania.common.block.corporea.BlockCorporeaIndex;
 import vazkii.botania.common.core.helper.ItemNBTHelper;
@@ -33,11 +38,13 @@ import vazkii.botania.common.core.helper.ItemNBTHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ItemRequestingHalo extends Item implements IManaUsingItem {
   private static final String PREFIX_INDEX_POS = "bound_position";
   private static final String PREFIX_SENDER_POS = "sender_position";
   private static final String PREFIX_MODULES = "modules";
+  private static final String PREFIX_CRAFTING_SLOT_ITEMS = "crafting_slot_items";
 
   public ItemRequestingHalo() {
     super(new Properties().group(IC.ITEM_GROUP).maxStackSize(1).setISTER(() -> ISTERRequestingHalo::new));
@@ -136,8 +143,66 @@ public class ItemRequestingHalo extends Item implements IManaUsingItem {
     return ItemNBTHelper.getInt(stack, PREFIX_MODULES, 0) != 0;
   }
 
+  public static ListNBT getOrCreateCraftingSlotNBTList(ItemStack halo) {
+    boolean didChange = false;
+    ListNBT nbt = ItemNBTHelper.getList(halo, PREFIX_CRAFTING_SLOT_ITEMS, Constants.NBT.TAG_COMPOUND, true);
+    if (nbt == null) {
+      nbt = new ListNBT();
+      didChange = true;
+    }
+    for (int i = nbt.size(); i < 9; i++) {
+      nbt.add(new CompoundNBT());
+    }
+    if (didChange)
+      ItemNBTHelper.setList(halo, PREFIX_CRAFTING_SLOT_ITEMS, nbt);
+    return nbt;
+  }
+
+  /**
+   * Should only be called on server!!!
+   * @param replaceHandler called when the stack in that slot got replaced (probably drop the item as entity right here)
+   * @param addStackHandler called when the adding stack got changed (with the changed stack passed in)
+   * @return the old item in that slot
+   */
+  public static boolean tryPutStackInCraftingSlot(ItemStack halo, int slot, ItemStack orgAddStack, Consumer<ItemStack> replaceHandler, Consumer<ItemStack> addStackHandler) {
+    if (slot > 8 || slot < 0 || orgAddStack.isEmpty()) return false;
+
+    ItemStack addStack = orgAddStack.copy();
+    ItemStack orgStack = getStackInCraftingSlot(halo, slot);
+
+    Pair<Boolean, ItemStack> addResult = StackHelper.addToAnotherStack(addStack, orgStack);
+    orgStack = addResult.getSecond();
+
+    ListNBT list = getOrCreateCraftingSlotNBTList(halo);
+    if (addResult.getFirst()) {
+      addStackHandler.accept(addStack);
+      list.set(slot, orgStack.write(new CompoundNBT()));
+    } else {
+      replaceHandler.accept(orgStack);
+      addStackHandler.accept(ItemStack.EMPTY);
+      list.set(slot, addStack.write(new CompoundNBT()));
+    }
+
+    return true;
+  }
+
+  /**
+   * This could be called on both client and server
+   */
+  public static ItemStack getStackInCraftingSlot(ItemStack halo, int slot) {
+    ListNBT list = getOrCreateCraftingSlotNBTList(halo);
+    return ItemStack.read(list.getCompound(slot));
+  }
+
+  public static ItemStack setStackInCraftingSlot(ItemStack halo, int slot, ItemStack newStack) {
+    ListNBT list = getOrCreateCraftingSlotNBTList(halo);
+    ItemStack oldStack = ItemStack.read(list.getCompound(slot));
+    list.set(slot, newStack.isEmpty() ? new CompoundNBT() : newStack.write(new CompoundNBT()));
+    return oldStack;
+  }
+
   private String globalPosToString(GlobalPos pos) {
-    return pos.getDimension().getLocation().toString() + " (" + pos.getPos().getCoordinatesAsString() + ")";
+    return pos.getDimension().getLocation() + " (" + pos.getPos().getCoordinatesAsString() + ")";
   }
 
   @Override
@@ -182,5 +247,10 @@ public class ItemRequestingHalo extends Item implements IManaUsingItem {
   @Override
   public boolean usesMana(ItemStack stack) {
     return true;
+  }
+
+  @Override
+  public boolean shouldSyncTag() {
+    return super.shouldSyncTag();
   }
 }

@@ -1,21 +1,16 @@
 package shblock.interactivecorporea.common.corporea;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import shblock.interactivecorporea.IC;
-import shblock.interactivecorporea.common.network.PacketUpdateItemList;
 import shblock.interactivecorporea.common.util.ItemListHelper;
-import shblock.interactivecorporea.common.util.StackHelper;
 import vazkii.botania.api.corporea.*;
 import vazkii.botania.common.impl.corporea.CorporeaRequest;
 import vazkii.botania.common.impl.corporea.CorporeaResult;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CorporeaUtil {
   private static final CorporeaAllMatcher ALL_MATCHER = new CorporeaAllMatcher();

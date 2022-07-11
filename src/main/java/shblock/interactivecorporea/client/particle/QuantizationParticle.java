@@ -19,9 +19,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
-import org.lwjgl.opengl.GL11;
 import shblock.interactivecorporea.client.render.ColoredItemParticleHelper;
 import vazkii.botania.common.core.helper.Vector3;
+
+import static org.lwjgl.opengl.GL44.*;
 
 public class QuantizationParticle extends Particle {
   private static final Minecraft mc = Minecraft.getInstance();
@@ -109,7 +110,7 @@ public class QuantizationParticle extends Particle {
     float a = (float) ((MathHelper.clamp(1 - norAge, .5, 1) - .5) * 2);
 
     mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-    builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
+    builder.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
     buffer.pos(rPosItem[0].getX(), rPosItem[0].getY(), rPosItem[0].getZ()).color(1F, 1F, 1F, a).tex(itemMaxU, itemMaxV).lightmap(j).endVertex();
     buffer.pos(rPosItem[1].getX(), rPosItem[1].getY(), rPosItem[1].getZ()).color(1F, 1F, 1F, a).tex(itemMaxU, itemMinV).lightmap(j).endVertex();
     buffer.pos(rPosItem[2].getX(), rPosItem[2].getY(), rPosItem[2].getZ()).color(1F, 1F, 1F, a).tex(itemMinU, itemMinV).lightmap(j).endVertex();
@@ -130,7 +131,7 @@ public class QuantizationParticle extends Particle {
     a = 1F;
 
     mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_PARTICLES_TEXTURE);
-    builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
+    builder.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP);
     buffer.pos(rPosSpark[0].getX(), rPosSpark[0].getY(), rPosSpark[0].getZ()).color(r, g, b, a).tex(maxU, maxV).lightmap(j).endVertex();
     buffer.pos(rPosSpark[1].getX(), rPosSpark[1].getY(), rPosSpark[1].getZ()).color(r, g, b, a).tex(maxU, minV).lightmap(j).endVertex();
     buffer.pos(rPosSpark[2].getX(), rPosSpark[2].getY(), rPosSpark[2].getZ()).color(r, g, b, a).tex(minU, minV).lightmap(j).endVertex();
@@ -142,7 +143,7 @@ public class QuantizationParticle extends Particle {
     @Override
     public void beginRender(BufferBuilder bufferBuilder, TextureManager textureManager) {
       RenderSystem.depthMask(true);
-      RenderSystem.alphaFunc(GL11.GL_ALWAYS, 0F);
+      RenderSystem.alphaFunc(GL_ALWAYS, 0F);
       RenderSystem.defaultAlphaFunc();
       RenderSystem.enableBlend();
       RenderSystem.defaultBlendFunc();

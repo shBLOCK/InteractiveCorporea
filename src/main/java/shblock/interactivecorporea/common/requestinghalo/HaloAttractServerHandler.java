@@ -2,13 +2,14 @@ package shblock.interactivecorporea.common.requestinghalo;
 
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.world.World;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import shblock.interactivecorporea.IC;
+import shblock.interactivecorporea.common.item.HaloModule;
+import shblock.interactivecorporea.common.item.ItemRequestingHalo;
 import vazkii.botania.client.fx.SparkleParticleData;
 import vazkii.botania.common.core.helper.MathHelper;
 import vazkii.botania.common.core.helper.Vector3;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = IC.MODID)
-public class HaloServerHandler {
+public class HaloAttractServerHandler {
   private static final Map<PlayerEntity, List<ItemEntity>> attractedItems = new HashMap<>();
 
   @SubscribeEvent
@@ -36,13 +37,13 @@ public class HaloServerHandler {
             continue;
           }
 
-          attract(pos, item);
+          doAttract(pos, item);
         }
       }
     }
   }
 
-  private static void attract(Vector3 pos, ItemEntity item) {
+  private static void doAttract(Vector3 pos, ItemEntity item) {
     MathHelper.setEntityMotionFromVector(item, pos, 0.3F);
     item.velocityChanged = true;
 
@@ -59,8 +60,20 @@ public class HaloServerHandler {
     );
   }
 
-  public static void addAttractItem(PlayerEntity player, ItemEntity item) {
+  public static void addToAttractedItems(PlayerEntity player, ItemEntity item) {
     List<ItemEntity> list = attractedItems.computeIfAbsent(player, k -> new ArrayList<>());
     list.add(item);
+  }
+
+  /**
+   * @return if the item was attracted (if the halo has the magnate module)
+   */
+  public static boolean attractIfHasModule(PlayerEntity player, ItemEntity item, ItemStack halo) {
+    if (ItemRequestingHalo.isModuleInstalled(halo, HaloModule.MAGNATE)) {
+      addToAttractedItems(player, item);
+      return true;
+    } else {
+      return false;
+    }
   }
 }

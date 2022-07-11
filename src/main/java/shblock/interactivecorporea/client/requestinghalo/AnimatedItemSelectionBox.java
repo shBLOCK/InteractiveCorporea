@@ -10,13 +10,15 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
-import org.lwjgl.opengl.GL11;
 import shblock.interactivecorporea.IC;
+import shblock.interactivecorporea.client.util.RenderTick;
 import shblock.interactivecorporea.common.util.Vec2d;
 import vazkii.botania.client.core.handler.ClientTickHandler;
 import vazkii.botania.mixin.AccessorRenderState;
 
 import java.awt.*;
+
+import static org.lwjgl.opengl.GL44.*;
 
 public class AnimatedItemSelectionBox {
   private static final Minecraft mc = Minecraft.getInstance();
@@ -24,7 +26,7 @@ public class AnimatedItemSelectionBox {
   private static final RenderType RENDER_TYPE = RenderType.makeType(
       IC.MODID + "_item_selection_box",
       DefaultVertexFormats.POSITION_COLOR_TEX,
-      GL11.GL_QUADS,
+      GL_QUADS,
       16, false, false,
       RenderType.State.getBuilder()
           .transparency(AccessorRenderState.getTranslucentTransparency())
@@ -72,7 +74,7 @@ public class AnimatedItemSelectionBox {
       Vec2d targetPos = target.getPos();
       double spdModifier = Math.sin(MathHelper.clamp(pos.distanceTo(targetPos), 0F, .5F) * Math.PI);
       spdModifier = MathHelper.clamp(spdModifier, 0.1F, 0.5F);
-      spdModifier *= ClientTickHandler.delta;
+      spdModifier *= RenderTick.delta;
       pos.add(
           (targetPos.x - pos.x) * spdModifier,
           (targetPos.y - pos.y) * spdModifier
@@ -94,12 +96,12 @@ public class AnimatedItemSelectionBox {
     ms.translate(0, 0, -.1);
     IRenderTypeBuffer.Impl buffers = mc.getRenderTypeBuffers().getBufferSource();
     IVertexBuilder buffer = buffers.getBuffer(RENDER_TYPE);
-    Color color = Color.getHSBColor(ClientTickHandler.total  / 200F,1F, 1F);
+    Color color = Color.getHSBColor((float) (RenderTick.total  / 200F),1F, 1F);
     float r = color.getRed() / 255F;
     float g = color.getGreen() / 255F;
     float b = color.getBlue() / 255F;
     if (requestAnimationTime > 0F) {
-      requestAnimationTime -= ClientTickHandler.delta / 5F;
+      requestAnimationTime -= RenderTick.delta / 5F;
       float aniScale = .25F;
       ms.scale(
           (float) (Math.sin(requestAnimationTime * Math.PI * 2F + Math.PI * 2F) * aniScale + 1F),

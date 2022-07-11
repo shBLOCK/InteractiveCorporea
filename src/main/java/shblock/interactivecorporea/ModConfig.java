@@ -3,7 +3,7 @@ package shblock.interactivecorporea;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
-public final class ModConfig {//TODO: make configs for animation speed
+public final class ModConfig {
   public static class Client {
     public final ForgeConfigSpec.BooleanValue itemRequestingHaloAnimation;
 

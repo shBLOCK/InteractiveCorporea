@@ -1,20 +1,20 @@
 package shblock.interactivecorporea.client.requestinghalo;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.lwjgl.glfw.GLFW;
+import net.minecraftforge.fml.network.NetworkEvent;
 import shblock.interactivecorporea.IC;
 import shblock.interactivecorporea.ModSounds;
 import shblock.interactivecorporea.common.item.ItemRequestingHalo;
@@ -23,6 +23,9 @@ import shblock.interactivecorporea.common.util.CurioSlotPointer;
 import shblock.interactivecorporea.common.util.ToolItemHelper;
 
 import java.util.List;
+import java.util.function.Supplier;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = IC.MODID)//TODO: advancements?
 public class RequestingHaloInterfaceHandler {
@@ -32,7 +35,7 @@ public class RequestingHaloInterfaceHandler {
   public static final KeyBinding KEY_BINDING = new KeyBinding(
       "key.interactive_corporea.requesting_halo",
       KeyConflictContext.IN_GAME,
-      InputMappings.Type.KEYSYM.getOrMakeInput(GLFW.GLFW_KEY_TAB),
+      InputMappings.Type.KEYSYM.getOrMakeInput(GLFW_KEY_TAB),
       IC.KEY_CATEGORY
   );
 
@@ -52,14 +55,14 @@ public class RequestingHaloInterfaceHandler {
 
   private static void setupKeyboardListener() {
     KeyBinding.unPressAllKeys();
-    GLFW.glfwSetKeyCallback(mc.getMainWindow().getHandle(),
+    glfwSetKeyCallback(mc.getMainWindow().getHandle(),
         (windowPointer, key, scanCode, action, modifiers) -> {
           preKeyEvent(key, scanCode, action, modifiers);
           if ((!shouldCancelKeyEvent(key, scanCode)) || mc.currentScreen != null) {
             mc.execute(() -> mc.keyboardListener.onKeyEvent(windowPointer, key, scanCode, action, modifiers));
           }
         });
-    GLFW.glfwSetCharModsCallback(mc.getMainWindow().getHandle(), (windowPointer, codePoint, modifiers) -> {
+    glfwSetCharModsCallback(mc.getMainWindow().getHandle(), (windowPointer, codePoint, modifiers) -> {
       if (mc.currentScreen != null) {
         mc.execute(() -> {
           mc.keyboardListener.onCharEvent(windowPointer, codePoint, modifiers);
@@ -126,7 +129,16 @@ public class RequestingHaloInterfaceHandler {
    * Check if the ItemStack in the slot of current opened interface is still the original one (If the halo item has not been changed)
    */
   public static boolean slotStillValid() {
-    return getInterface().getSlot().getStack(mc.player) == getInterface().getHaloItem();
+    ItemStack currentStack = getInterface().getSlot().getStack(mc.player);
+//    if (ItemStack.areItemStacksEqual(currentStack, getInterface().getHaloItem())) {
+//      if (currentStack != getInterface().getHaloItem()) {
+//        getInterface().setHaloItem(currentStack);
+//      }
+//      return true;
+//    }
+//    return false;
+
+    return currentStack.isItemEqual(getInterface().getHaloItem()); //TODO: better halo item validation
   }
 
   public static void handleUpdatePacket(List<ItemStack> itemList) {
@@ -152,6 +164,8 @@ public class RequestingHaloInterfaceHandler {
     if (face != null) {
       if (!slotStillValid()) {
         clearInterface();
+      } else {
+        face.updateHaloItem(face.getSlot().getStack(mc.player));
       }
 //      if (mc.currentScreen != null) {
 //        Screen screen = mc.currentScreen;
@@ -182,14 +196,36 @@ public class RequestingHaloInterfaceHandler {
     }
   }
 
+//  @SubscribeEvent
+//  public static void onGuiMouseClicked(GuiScreenEvent.MouseClickedEvent.Pre event) {
+//    boolean consumed = handleGuiMouseEvent(event.getButton(), GLFW_PRESS);
+//    if (consumed) {
+//      event.setCanceled(true);
+//    }
+//  }
+//
+//  @SubscribeEvent
+//  public static void onGuiMouseRelease(GuiScreenEvent.MouseReleasedEvent.Pre event) {
+//    boolean consumed = handleGuiMouseEvent(event.getButton(), GLFW_RELEASE);
+//    if (consumed) {
+//      event.setCanceled(true);
+//    }
+//  }
+//
+//  private static boolean handleGuiMouseEvent(int button, int action) {
+//    if (getInterface() != null) {
+//      if (!getInterface().isOpenClose()) {
+//
+//      }
+//    }
+//  }
+
   @SubscribeEvent
   public static void onMouseInput(InputEvent.RawMouseEvent event) {
     if (getInterface() != null) {
       if (!getInterface().isOpenClose()) {
-        if (mc.currentScreen == null) {
-          if (getInterface().onMouseInput(event.getButton(), event.getAction(), event.getMods())) {
-            event.setCanceled(true);
-          }
+        if (getInterface().onMouseInput(event.getButton(), event.getAction(), event.getMods())) {
+          event.setCanceled(true);
         }
       }
     }
@@ -228,12 +264,12 @@ public class RequestingHaloInterfaceHandler {
 //        e.printStackTrace();
 //      }
 //    }
-    if (mc.currentScreen != null) return;
     if (getInterface() != null) {
       if (!getInterface().isOpenClose()) {
         getInterface().onKeyEvent(event.getKey(), event.getScanCode(), event.getAction(), event.getModifiers());
       }
     }
+    if (mc.currentScreen != null) return;
     if (KEY_BINDING.isPressed()) {
       if (getInterface() == null) {
         tryOpen(mc.player);
@@ -249,5 +285,23 @@ public class RequestingHaloInterfaceHandler {
         getInterface().onCharEvent(codePoint, modifiers);
       }
     }
+  }
+
+  public static Supplier<ItemStack> jeiUnderMouseGetter = () -> null;
+
+  public static ItemStack getUnderMouseItemStack() {
+    Screen screen = mc.currentScreen;
+    if (screen instanceof ContainerScreen) {
+      Slot slot = ((ContainerScreen<?>) screen).getSlotUnderMouse();
+      if (slot != null) {
+        return slot.getStack();
+      }
+    }
+
+    if (screen != null) {
+      return jeiUnderMouseGetter.get();
+    }
+
+    return ItemStack.EMPTY;
   }
 }

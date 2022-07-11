@@ -19,6 +19,7 @@ import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import shblock.interactivecorporea.ModConfig;
 import shblock.interactivecorporea.client.render.RenderUtil;
+import shblock.interactivecorporea.client.util.RenderTick;
 import shblock.interactivecorporea.common.util.Perlin;
 import vazkii.botania.client.core.handler.ClientTickHandler;
 import vazkii.botania.client.render.tile.RenderTileCorporeaCrystalCube;
@@ -43,20 +44,22 @@ public class ISTERRequestingHalo extends ItemStackTileEntityRenderer {
         ms.scale(s, s, s);
         ms.translate(.15, 0, 0);
         break;
+      case GROUND:
+        float sg = .1F;
+        ms.scale(sg, sg, sg);
+        break;
     }
-
-    float pt = ClientTickHandler.partialTicks;
 
     ms.push();
     ms.scale(.5F, .5F, .5F);
     ms.translate(.5, .5, .5);
-    corporeaIndexRenderer.render(null, pt, ms, buffers, combinedLight, combinedOverlay);
+    corporeaIndexRenderer.render(null, (float) RenderTick.pt, ms, buffers, combinedLight, combinedOverlay);
     ms.pop();
 
     if (ModConfig.CLIENT.itemRequestingHaloAnimation.get()) {
       ms.push();
       ms.translate(.5, .5, .5);
-      int color = MathHelper.hsvToRGB((ClientTickHandler.total / 200F) % 1F, 1F, 1F) | 150 << 24;
+      int color = MathHelper.hsvToRGB((float) ((RenderTick.total / 200F) % 1F), 1F, 1F) | 150 << 24;
       RenderUtil.renderPerlinStar(ms, buffers, color, .1F, .1F, .1F, 0);
       ms.pop();
     }
@@ -79,7 +82,7 @@ public class ISTERRequestingHalo extends ItemStackTileEntityRenderer {
       ms.translate(0, .8, 0);
 
       ms.translate(.5, .5, .5);
-      double r = ClientTickHandler.total * .1;
+      double r = RenderTick.total * .1;
       if (!ModConfig.CLIENT.itemRequestingHaloAnimation.get())
         r = .2;
       ms.rotate(new Quaternion(

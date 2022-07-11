@@ -6,17 +6,17 @@ import shblock.interactivecorporea.client.requestinghalo.RequestingHaloInterface
 
 import java.util.function.Supplier;
 
-public class PacketRequestResult {
+public class SPacketRequestResult {
   private final int requestId;
   private final int successAmount;
 
-  public PacketRequestResult(int requestId, int successAmount) {
+  public SPacketRequestResult(int requestId, int successAmount) {
     this.requestId = requestId;
     this.successAmount = successAmount;
   }
 
-  public static PacketRequestResult decode(PacketBuffer buf) {
-    return new PacketRequestResult(buf.readInt(), buf.readInt());
+  public static SPacketRequestResult decode(PacketBuffer buf) {
+    return new SPacketRequestResult(buf.readInt(), buf.readInt());
   }
 
   public void encode(PacketBuffer buf) {

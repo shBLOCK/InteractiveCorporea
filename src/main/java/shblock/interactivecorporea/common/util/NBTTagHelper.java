@@ -89,4 +89,34 @@ public class NBTTagHelper {
   public static void putWorld(CompoundNBT nbt, String tag, World world) {
     nbt.put(tag, World.CODEC.encodeStart(NBTDynamicOps.INSTANCE, world.getDimensionKey()).get().orThrow());
   }
+
+  public static CompoundNBT putCurioSlot(CurioSlotPointer slot) {
+    CompoundNBT nbt = new CompoundNBT();
+    nbt.putString("identifier", slot.identifier);
+    nbt.putInt("slot", slot.slot);
+    return nbt;
+  }
+
+  public static CurioSlotPointer getCurioSlot(CompoundNBT nbt) {
+    return new CurioSlotPointer(nbt.getString("identifier"), nbt.getInt("slot"));
+  }
+
+  public static CompoundNBT putCISlot(CISlotPointer slot) {
+    CompoundNBT nbt = new CompoundNBT();
+    nbt.putBoolean("is_inv", slot.isInventory());
+    if (slot.isInventory()) {
+      nbt.putInt("slot", slot.getInventory());
+    } else {
+      nbt.put("slot", putCurioSlot(slot.getCurio()));
+    }
+    return nbt;
+  }
+
+  public static CISlotPointer getCISlot(CompoundNBT nbt) {
+    if (nbt.getBoolean("is_inv")) {
+      return new CISlotPointer(nbt.getInt("slot"));
+    } else {
+      return new CISlotPointer(getCurioSlot(nbt.getCompound("slot")));
+    }
+  }
 }

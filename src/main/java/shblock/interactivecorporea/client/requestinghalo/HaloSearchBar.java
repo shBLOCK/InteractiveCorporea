@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.fonts.TextInputUtil;
 import net.minecraft.util.math.MathHelper;
 import shblock.interactivecorporea.client.render.RenderUtil;
+import shblock.interactivecorporea.client.util.RenderTick;
 import shblock.interactivecorporea.common.util.MathUtil;
 import vazkii.botania.client.core.handler.ClientTickHandler;
 
@@ -27,7 +28,7 @@ public class HaloSearchBar {
     float alpha = .6F;
     float[] color;
     if (searching) {
-      color = MathUtil.hsvaToRGBA((ClientTickHandler.total / 400F) % 1F, 1F, 1F, alpha);
+      color = MathUtil.hsvaToRGBA((float) ((RenderTick.total / 400F) % 1F), 1F, 1F, alpha);
     } else {
       color = new float[]{.5F, .5F, .5F, alpha};
     }
@@ -44,7 +45,7 @@ public class HaloSearchBar {
         i -> {
           if (searching) {
             if (i == selectionEnd)
-              if ((ClientTickHandler.total / 20) % 1 < .5) {
+              if ((RenderTick.total / 20) % 1 < .5) {
                 return i == searchString.length() ? '_' : '|';
               }
           }

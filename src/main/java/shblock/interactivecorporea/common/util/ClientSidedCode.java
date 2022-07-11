@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.thread.SidedThreadGroups;
 import net.minecraftforge.fml.network.NetworkEvent;
 import shblock.interactivecorporea.ModSounds;
 import shblock.interactivecorporea.client.particle.QuantizationParticleData;
-import shblock.interactivecorporea.common.network.PacketPlayQuantizationEffect;
+import shblock.interactivecorporea.common.network.SPacketPlayQuantizationEffect;
 import vazkii.botania.common.core.helper.Vector3;
 
 import javax.annotation.Nullable;
@@ -30,31 +30,31 @@ public class ClientSidedCode {
     }
   }
 
-  public static void handlePacketPlayQuantizationEffect(int type, ItemStack stack, int time, Vector3 pos, Vector3 normal, Supplier<NetworkEvent.Context> ctx) {
+  public static void handlePacketPlayQuantizationEffect(int type, ItemStack stack, int time, Vector3 pos, Vector3 normal, double scale, Supplier<NetworkEvent.Context> ctx) {
     Minecraft mc = Minecraft.getInstance();
     ctx.get().enqueueWork(() -> {
       if (mc.world == null) return;
       QuantizationParticleData data;
       switch (type) {
-        case PacketPlayQuantizationEffect.QUANTIZATION:
+        case SPacketPlayQuantizationEffect.QUANTIZATION:
           mc.world.playSound(pos.x, pos.y, pos.z, ModSounds.quantumSend, SoundCategory.PLAYERS, .8F, 1F, false);
           for (int i = 0; i < 512; i++) {
-            double particleDist = 2;
+            double particleDist = 2 * scale;
             Vector3 dest = new Vector3(
-                PacketPlayQuantizationEffect.RAND.nextDouble() * 2 - 1,
-                PacketPlayQuantizationEffect.RAND.nextDouble() * 2 - 1,
-                PacketPlayQuantizationEffect.RAND.nextDouble() * 2 - 1)
+                SPacketPlayQuantizationEffect.RAND.nextDouble() * 2 - 1,
+                SPacketPlayQuantizationEffect.RAND.nextDouble() * 2 - 1,
+                SPacketPlayQuantizationEffect.RAND.nextDouble() * 2 - 1)
                 .normalize()
                 .multiply(particleDist);
             data = new QuantizationParticleData(dest, time, stack, true);
             mc.world.addParticle(data, pos.x, pos.y, pos.z, 0, 0, 0);
           }
           break;
-        case PacketPlayQuantizationEffect.CONSTRUCTION:
+        case SPacketPlayQuantizationEffect.CONSTRUCTION:
           mc.world.playSound(pos.x, pos.y, pos.z, ModSounds.quantumReceive, SoundCategory.PLAYERS, .8F, 1F, false);
-          Vector3 rotBase = normal.perpendicular().normalize().multiply(.5);
+          Vector3 rotBase = normal.perpendicular().normalize().multiply(.5 * scale);
           for (int i = 0; i < 128; i++) {
-            Vector3 roted = rotBase.rotate(PacketPlayQuantizationEffect.RAND.nextDouble() * Math.PI * 2, normal);
+            Vector3 roted = rotBase.rotate(SPacketPlayQuantizationEffect.RAND.nextDouble() * Math.PI * 2, normal);
             Vector3 p = roted.add(pos);
             data = new QuantizationParticleData(roted.negate(), time, stack, false);
             mc.world.addParticle(data, true, p.x, p.y, p.z, 0, 0, 0);

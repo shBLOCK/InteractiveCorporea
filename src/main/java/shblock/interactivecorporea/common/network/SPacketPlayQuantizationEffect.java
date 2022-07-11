@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class PacketPlayQuantizationEffect {
+public class SPacketPlayQuantizationEffect {
   public static final Random RAND = new Random();
 
   public static final int QUANTIZATION = 0;
@@ -24,37 +24,41 @@ public class PacketPlayQuantizationEffect {
   private final int time;
   private final Vector3 pos;
   private final Vector3 normal;
+  private final double scale;
 
-  private PacketPlayQuantizationEffect(int type, ItemStack stack, int time, Vector3 pos, @Nullable Vector3 normal) {
+  private SPacketPlayQuantizationEffect(int type, ItemStack stack, int time, Vector3 pos, @Nullable Vector3 normal, double scale) {
     this.type = type;
     this.stack = stack;
     this.time = time;
     this.pos = pos;
     this.normal = normal;
+    this.scale = scale;
   }
 
-  public PacketPlayQuantizationEffect(ItemStack stack, int time, Vector3 pos) {
-    this(0, stack, time, pos, null);
+  public SPacketPlayQuantizationEffect(ItemStack stack, int time, Vector3 pos, double scale) {
+    this(0, stack, time, pos, null, scale);
   }
 
-  public PacketPlayQuantizationEffect(ItemStack stack, int time, Vector3 pos, Vector3 normal) {
-    this(1, stack, time, pos, normal);
+  public SPacketPlayQuantizationEffect(ItemStack stack, int time, Vector3 pos, Vector3 normal, double scale) {
+    this(1, stack, time, pos, normal, scale);
   }
 
-  public static PacketPlayQuantizationEffect decode(PacketBuffer buf) {
+  public static SPacketPlayQuantizationEffect decode(PacketBuffer buf) {
     switch (buf.readInt()) {
       case QUANTIZATION:
-        return new PacketPlayQuantizationEffect(
-            buf.readItemStack(),
-            buf.readVarInt(),
-            NetworkHelper.readVector3(buf)
-        );
-      case CONSTRUCTION:
-        return new PacketPlayQuantizationEffect(
+        return new SPacketPlayQuantizationEffect(
             buf.readItemStack(),
             buf.readVarInt(),
             NetworkHelper.readVector3(buf),
-            NetworkHelper.readVector3(buf)
+            buf.readFloat()
+        );
+      case CONSTRUCTION:
+        return new SPacketPlayQuantizationEffect(
+            buf.readItemStack(),
+            buf.readVarInt(),
+            NetworkHelper.readVector3(buf),
+            NetworkHelper.readVector3(buf),
+            buf.readFloat()
         );
     }
     assert false;
@@ -70,9 +74,10 @@ public class PacketPlayQuantizationEffect {
     if (type == CONSTRUCTION) {
       NetworkHelper.writeVector3(buf, normal);
     }
+    buf.writeFloat((float) scale);
   }
 
   public void handle(Supplier<NetworkEvent.Context> ctx) {
-    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientSidedCode.handlePacketPlayQuantizationEffect(type, stack, time, pos, normal, ctx));
+    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientSidedCode.handlePacketPlayQuantizationEffect(type, stack, time, pos, normal, scale, ctx));
   }
 }

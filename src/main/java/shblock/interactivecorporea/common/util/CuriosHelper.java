@@ -12,7 +12,6 @@ import java.util.Map;
 public class CuriosHelper {
   public static ItemStack getPointedSlot(LivingEntity entity, CurioSlotPointer pointer) {
     ICuriosItemHandler handler = CuriosApi.getCuriosHelper().getCuriosHandler(entity).orElse(null);
-    if (handler == null) return null;
     Map<String, ICurioStacksHandler> curios = handler.getCurios();
     if (curios != null) {
       ICurioStacksHandler stacksHandler = curios.get(pointer.identifier);
@@ -23,6 +22,6 @@ public class CuriosHelper {
         }
       }
     }
-    return null;
+    return ItemStack.EMPTY;
   }
 }

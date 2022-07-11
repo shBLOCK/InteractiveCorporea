@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
+import shblock.interactivecorporea.client.util.RenderTick;
 import shblock.interactivecorporea.common.tile.TileItemQuantizationDevice;
 import vazkii.botania.client.core.handler.ClientTickHandler;
 import vazkii.botania.client.core.handler.MiscellaneousIcons;
@@ -40,7 +41,7 @@ public class TERItemQuantizationDevice extends TileEntityRenderer<TileItemQuanti
     ms.pop();
 
     ms.push();
-    ms.translate(.25, Math.sin(ClientTickHandler.total * .1) * .1 + .8, .25);
+    ms.translate(.25, Math.sin(RenderTick.total * .1) * .1 + .8, .25);
     ms.scale(.5F, .5F, .5F);
     corporeaIndexRenderer.render(null, pt, ms, buffers, combinedLight, combinedOverlay);
     ms.pop();
@@ -56,7 +57,7 @@ public class TERItemQuantizationDevice extends TileEntityRenderer<TileItemQuanti
     ms.push();
     ms.translate(0.5, 0.3, 0.5);
 
-    double time = ClientTickHandler.ticksInGame + pt;
+    double time = RenderTick.ticks + pt;
 
     float scale = 0.75F;
     ms.scale(scale, scale, scale);

@@ -5,7 +5,5 @@
   "refmap": "mixins.integrated_proxy.refmap.json",
   "minVersion": "0.8",
   "client": [
-    "MixinGameRenderer",
-    "MixinWorldRenderer"
   ]
 }

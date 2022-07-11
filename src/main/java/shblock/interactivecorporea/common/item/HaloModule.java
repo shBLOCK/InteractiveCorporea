@@ -16,7 +16,7 @@ public enum HaloModule {
   UPDATE("update", ModBlocks.hourglass.getRegistryName()),
   AMOUNT_SORT("amount_sort", ModItems.corporeaSparkMaster.getRegistryName()),
   MAGNATE("magnate", ModItems.magnetRing.getRegistryName()),
-  CRAFTING("crafting", ModItems.craftingHalo.getRegistryName());
+  CRAFTING("crafting", ModItems.autocraftingHalo.getRegistryName());
 
   public final int bitMask;
   public final String translationKey;

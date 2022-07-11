@@ -11,20 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class PacketUpdateItemList {
+public class SPacketUpdateItemList {
   private final List<ItemStack> itemList;
 
-  public PacketUpdateItemList(List<ItemStack> itemList) {
+  public SPacketUpdateItemList(List<ItemStack> itemList) {
     this.itemList = itemList;
   }
 
-  public static PacketUpdateItemList decode(PacketBuffer buf) {
+  public static SPacketUpdateItemList decode(PacketBuffer buf) {
     int len = buf.readVarInt();
     List<ItemStack> itemList = new ArrayList<>();
     for (int i = 0; i < len; i++) {
       itemList.add(NetworkHelper.readBigStack(buf));
     }
-    return new PacketUpdateItemList(itemList);
+    return new SPacketUpdateItemList(itemList);
   }
 
   public void encode(PacketBuffer buf) {
